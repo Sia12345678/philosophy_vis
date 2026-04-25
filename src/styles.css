@@ -261,6 +261,7 @@ body.record-mode {
 }
 
 body.record-mode #app {
+  display: block; /* override the default grid so .stage fills the full height */
   width: 56.25vh; /* 9:16 portrait container */
   max-width: 100vw;
   height: 100vh;
@@ -268,7 +269,12 @@ body.record-mode #app {
   border-left: 1px solid #1a1814;
   border-right: 1px solid #1a1814;
   background: var(--bg);
-  grid-template-rows: 0 1fr 0; /* collapse topbar + timeline rows */
+  position: relative;
+}
+
+body.record-mode .stage {
+  height: 100%;
+  width: 100%;
 }
 
 body.record-mode .topbar,
