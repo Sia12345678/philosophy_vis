@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>哲学家星图 · Philosophers Across Time & Place</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <h1>
+          <span class="title-zh">哲学家星图</span>
+          <span class="title-en">Philosophers Across Time &amp; Place</span>
+        </h1>
+        <div class="controls">
+          <input id="search" type="search" placeholder="搜索 / Search…" />
+          <label class="toggle">
+            <input id="toggle-lineage" type="checkbox" />
+            <span>显示影响连线</span>
+          </label>
+        </div>
+      </header>
+
+      <main class="stage">
+        <div id="map-root"></div>
+        <aside id="sidebar" class="sidebar collapsed" aria-hidden="true"></aside>
+        <div id="tooltip" class="tooltip" aria-hidden="true"></div>
+      </main>
+
+      <footer class="timeline-bar">
+        <button id="play" class="play-btn" aria-label="自动播放">▶</button>
+        <div class="timeline-wrap">
+          <input
+            id="timeline"
+            type="range"
+            min="-600"
+            max="2000"
+            value="-400"
+            step="1"
+          />
+          <div class="timeline-ticks" aria-hidden="true"></div>
+        </div>
+        <div id="year-label" class="year-label">公元前 400</div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

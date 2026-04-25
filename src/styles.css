@@ -1,0 +1,488 @@
+:root {
+  --bg: #f5f1e8;
+  --bg-deep: #ebe4d3;
+  --ink: #1f1a14;
+  --ink-soft: #5a4f3e;
+  --ink-faint: #a99c83;
+  --ocean: #d8d0bd;
+  --land: #f0e8d4;
+  --land-stroke: #b8ac90;
+  --accent: #8a3c2b;
+  --accent-soft: #c97f60;
+  --shadow: 0 6px 22px rgba(35, 25, 10, 0.12);
+  --tx-fast: 200ms;
+  --tx-mid: 400ms;
+  --tx-slow: 700ms;
+  --serif-zh: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --serif-en: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif-en), var(--serif-zh);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+}
+
+/* topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--land-stroke);
+  background: var(--bg);
+  z-index: 5;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-weight: 500;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.title-zh {
+  font-family: var(--serif-zh);
+  font-size: 22px;
+  letter-spacing: 0.08em;
+}
+
+.title-en {
+  font-family: var(--serif-en);
+  font-size: 16px;
+  font-style: italic;
+  color: var(--ink-soft);
+  letter-spacing: 0.02em;
+}
+
+.controls {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.controls input[type="search"] {
+  width: 220px;
+  padding: 6px 12px;
+  border: 1px solid var(--land-stroke);
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color var(--tx-fast);
+}
+
+.controls input[type="search"]:focus {
+  border-color: var(--accent);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--serif-zh);
+  font-size: 14px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* stage */
+.stage {
+  position: relative;
+  overflow: hidden;
+}
+
+#map-root {
+  width: 100%;
+  height: 100%;
+}
+
+#map-root svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* map visuals */
+.ocean {
+  fill: var(--ocean);
+}
+
+.land {
+  fill: var(--land);
+  stroke: var(--land-stroke);
+  stroke-width: 0.5;
+  stroke-linejoin: round;
+}
+
+.graticule {
+  fill: none;
+  stroke: var(--ink-faint);
+  stroke-width: 0.3;
+  stroke-opacity: 0.4;
+}
+
+#map-root svg {
+  cursor: grab;
+}
+#map-root svg:active {
+  cursor: grabbing;
+}
+
+/* lineage edges (Phase 3) */
+.lineage {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 0.7;
+  stroke-linecap: round;
+  pointer-events: none;
+  transition: opacity var(--tx-mid), stroke var(--tx-fast),
+    stroke-width var(--tx-fast);
+}
+
+.lineage-teacher {
+  stroke: #6b4a2a;
+  stroke-width: 0.9;
+}
+
+.lineage.focused {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.lineage.focused.lineage-teacher {
+  stroke: var(--accent);
+  stroke-width: 1.8;
+}
+
+/* spokes connecting clock-arranged dots to their city anchor */
+.spoke {
+  stroke: var(--ink-faint);
+  stroke-width: 0.5;
+  stroke-dasharray: 1.5 1.5;
+  pointer-events: none;
+  transition: opacity var(--tx-mid);
+}
+
+.anchor-dot {
+  fill: var(--ink-faint);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* philosopher dots */
+.philosopher {
+  cursor: pointer;
+  transition: opacity var(--tx-mid), transform var(--tx-mid),
+    stroke-width var(--tx-fast);
+}
+
+.philosopher.dim {
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.philosopher.active {
+  opacity: 1;
+}
+
+.philosopher:hover {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.philosopher.selected {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+.philosopher-label {
+  font-family: var(--serif-zh);
+  font-size: 11px;
+  fill: var(--ink);
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  opacity: 0;
+  transition: opacity var(--tx-mid);
+}
+
+.philosopher-label.visible {
+  opacity: 1;
+}
+
+/* tooltip */
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--bg);
+  border: 1px solid var(--land-stroke);
+  box-shadow: var(--shadow);
+  padding: 12px 14px;
+  max-width: 280px;
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0;
+  transition: opacity var(--tx-fast);
+  z-index: 10;
+}
+
+.tooltip.visible {
+  opacity: 1;
+}
+
+.tooltip .tt-name {
+  font-family: var(--serif-zh);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.tooltip .tt-name-en {
+  font-family: var(--serif-en);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-soft);
+  margin-left: 6px;
+}
+
+.tooltip .tt-meta {
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.tooltip .tt-section {
+  margin-top: 8px;
+  font-family: var(--serif-zh);
+}
+
+.tooltip .tt-section-label {
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.tooltip ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.tooltip li {
+  margin: 1px 0;
+}
+
+/* sidebar */
+.sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  background: var(--bg);
+  border-left: 1px solid var(--land-stroke);
+  box-shadow: -4px 0 16px rgba(35, 25, 10, 0.06);
+  padding: 24px 26px;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform var(--tx-slow) cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 8;
+}
+
+.sidebar:not(.collapsed) {
+  transform: translateX(0);
+}
+
+.sidebar .close-btn {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.sidebar .sb-name {
+  font-family: var(--serif-zh);
+  font-size: 26px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.sidebar .sb-name-en {
+  font-family: var(--serif-en);
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: 16px;
+  margin-top: 2px;
+  display: block;
+}
+
+.sidebar .sb-meta {
+  color: var(--ink-soft);
+  font-size: 13px;
+  margin: 6px 0 16px;
+  font-family: var(--serif-zh);
+}
+
+.sidebar h3 {
+  font-family: var(--serif-zh);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin: 18px 0 6px;
+  font-weight: 500;
+}
+
+.sidebar p,
+.sidebar li {
+  font-family: var(--serif-zh);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.sidebar ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.sidebar .work-year {
+  color: var(--ink-faint);
+  font-family: var(--serif-en);
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+/* timeline */
+.timeline-bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 28px 18px;
+  border-top: 1px solid var(--land-stroke);
+  background: var(--bg);
+}
+
+.play-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--land-stroke);
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background var(--tx-fast), color var(--tx-fast);
+}
+
+.play-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.play-btn.playing::before {
+  content: "⏸";
+}
+
+.play-btn:not(.playing)::before {
+  content: "▶";
+}
+
+.play-btn::before {
+  display: inline-block;
+}
+
+.play-btn {
+  font-size: 0;
+}
+
+.play-btn::before {
+  font-size: 14px;
+}
+
+.timeline-wrap {
+  position: relative;
+}
+
+#timeline {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--land-stroke);
+  outline: none;
+  cursor: pointer;
+}
+
+#timeline::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  box-shadow: var(--shadow);
+  cursor: grab;
+}
+
+#timeline::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  cursor: grab;
+}
+
+.timeline-ticks {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  height: 16px;
+  font-family: var(--serif-en);
+  font-size: 10px;
+  color: var(--ink-faint);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.year-label {
+  font-family: var(--serif-zh);
+  font-size: 14px;
+  color: var(--ink);
+  min-width: 90px;
+  text-align: right;
+}

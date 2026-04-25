@@ -1,0 +1,11 @@
+{
+  "eras": [
+    { "id": "axial", "from": -800, "to": -300, "name_zh": "轴心时代", "name_en": "Axial Age", "basemap": "world_bc500.geojson" },
+    { "id": "classical", "from": -300, "to": 400, "name_zh": "古典帝国", "name_en": "Classical Empires", "basemap": "world_100.geojson" },
+    { "id": "early_medieval", "from": 400, "to": 1100, "name_zh": "中古早期", "name_en": "Early Medieval", "basemap": "world_500.geojson" },
+    { "id": "late_medieval", "from": 1100, "to": 1500, "name_zh": "中古后期", "name_en": "Late Medieval", "basemap": "world_1300.geojson" },
+    { "id": "early_modern", "from": 1500, "to": 1800, "name_zh": "近代早期", "name_en": "Early Modern", "basemap": "world_1700.geojson" },
+    { "id": "modern", "from": 1800, "to": 1945, "name_zh": "近现代", "name_en": "Modern", "basemap": "world_1900.geojson" },
+    { "id": "contemporary", "from": 1945, "to": 2025, "name_zh": "当代", "name_en": "Contemporary", "basemap": "world_2010.geojson" }
+  ]
+}
