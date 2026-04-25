@@ -1,5 +1,18 @@
 import { store } from "../utils/store";
 import { formatYear } from "../utils/i18n";
+import waypointsData from "../data/waypoints.json";
+
+interface Waypoint {
+  year: number;
+  lng: number;
+  lat: number;
+  scale: number;
+  note_zh: string;
+}
+
+const WAYPOINTS = waypointsData.waypoints as Waypoint[];
+// Years per second when auto-playing
+const YEARS_PER_SEC = 80;
 
 export function initTimeline(): void {
   const slider = document.getElementById("timeline") as HTMLInputElement | null;
@@ -28,6 +41,9 @@ export function initTimeline(): void {
   slider.addEventListener("input", () => {
     const y = Number(slider.value);
     store.set({ year: y });
+    // Manual scrub exits cinematic
+    cinematicMode = false;
+    lastWaypointIdx = -2;
   });
 
   store.subscribe((s, prev) => {
@@ -42,6 +58,44 @@ export function initTimeline(): void {
 
   let rafId: number | null = null;
   let lastTs = 0;
+  let cinematicMode = false;
+  let lastWaypointIdx = -2;
+
+  // User pan/zoom during autoplay → exit cinematic but keep time advancing
+  window.addEventListener("camera:user-exit", () => {
+    if (cinematicMode) {
+      cinematicMode = false;
+    }
+  });
+
+  function dispatchCameraForYear(year: number): void {
+    if (!cinematicMode) return;
+    // Find segment: largest waypoint with wp.year <= year
+    let idx = -1;
+    for (let i = 0; i < WAYPOINTS.length; i++) {
+      if (WAYPOINTS[i].year <= year) idx = i;
+    }
+    if (idx === lastWaypointIdx) return;
+    lastWaypointIdx = idx;
+
+    if (idx < 0) idx = 0;
+    const next = WAYPOINTS[idx + 1];
+    const target = next ?? WAYPOINTS[idx];
+    const remaining =
+      next != null ? Math.max(next.year - year, 1) : 1;
+    const durationMs = (remaining / YEARS_PER_SEC) * 1000;
+
+    window.dispatchEvent(
+      new CustomEvent("camera:target", {
+        detail: {
+          lng: target.lng,
+          lat: target.lat,
+          scale: target.scale,
+          durationMs,
+        },
+      }),
+    );
+  }
 
   function tick(ts: number): void {
     if (!store.get("isPlaying")) {
@@ -51,12 +105,14 @@ export function initTimeline(): void {
     if (lastTs === 0) lastTs = ts;
     const dt = ts - lastTs;
     lastTs = ts;
-    // 80 years per second
-    const next = store.get("year") + dt * 0.08;
+    const next = store.get("year") + (dt / 1000) * YEARS_PER_SEC;
     if (next >= 2000) {
       store.set({ year: 2000, isPlaying: false });
+      cinematicMode = false;
     } else {
-      store.set({ year: Math.round(next) });
+      const newYear = Math.round(next);
+      store.set({ year: newYear });
+      dispatchCameraForYear(newYear);
       rafId = requestAnimationFrame(tick);
     }
   }
@@ -68,10 +124,15 @@ export function initTimeline(): void {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
       lastTs = 0;
+      cinematicMode = false;
     } else {
       if (store.get("year") >= 2000) store.set({ year: -600 });
       store.set({ isPlaying: true });
       lastTs = 0;
+      cinematicMode = true;
+      lastWaypointIdx = -2;
+      // Fire initial camera target immediately
+      dispatchCameraForYear(store.get("year"));
       rafId = requestAnimationFrame(tick);
     }
   });

@@ -94,6 +94,28 @@ body {
   border-color: var(--accent);
 }
 
+.school-select {
+  padding: 6px 28px 6px 10px;
+  border: 1px solid var(--land-stroke);
+  background: transparent;
+  font-family: var(--serif-zh);
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M0 0L5 6L10 0Z' fill='%235a4f3e'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color var(--tx-fast);
+}
+
+.school-select:focus,
+.school-select:hover {
+  border-color: var(--accent);
+}
+
 .toggle {
   display: flex;
   align-items: center;

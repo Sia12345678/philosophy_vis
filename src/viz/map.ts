@@ -277,11 +277,30 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
       landWrap.selectAll<SVGPathElement, unknown>("path.land").attr("stroke-width", 0.5 / k);
       // Update label offset since dot radius changed
       labels.attr("y", (d) => d._y - radiusFor(d) / k - 3 / k);
+      // User-initiated zoom → exit cinematic mode in timeline
+      if (event.sourceEvent) {
+        window.dispatchEvent(new CustomEvent("camera:user-exit"));
+      }
     });
 
   svg.call(zoom as any);
 
-  // Double-click resets zoom
+  // Cinematic camera target listener
+  window.addEventListener("camera:target", (e) => {
+    const detail = (e as CustomEvent<{ lng: number; lat: number; scale: number; durationMs: number }>).detail;
+    const xy = projection([detail.lng, detail.lat]);
+    if (!xy) return;
+    const tx = width / 2 - xy[0] * detail.scale;
+    const ty = height / 2 - xy[1] * detail.scale;
+    const T = d3.zoomIdentity.translate(tx, ty).scale(detail.scale);
+    svg
+      .transition("camera")
+      .duration(Math.max(300, detail.durationMs))
+      .ease(d3.easeCubicInOut)
+      .call(zoom.transform as any, T);
+  });
+
+  // Double-click resets zoom (and exits cinematic via the user-exit dispatch above)
   svg.on("dblclick", () => {
     svg.transition().duration(450).call(zoom.transform as any, d3.zoomIdentity);
   });

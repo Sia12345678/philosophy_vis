@@ -1,0 +1,13 @@
+{
+  "waypoints": [
+    { "year": -600, "lng": 30, "lat": 25, "scale": 1, "note_zh": "全球轴心时代起点" },
+    { "year": -400, "lng": 25, "lat": 35, "scale": 2.4, "note_zh": "雅典三剑客" },
+    { "year": -200, "lng": 25, "lat": 35, "scale": 2, "note_zh": "希腊化扩展" },
+    { "year": 100, "lng": 40, "lat": 32, "scale": 1.6, "note_zh": "罗马+汉+贵霜并立" },
+    { "year": 600, "lng": 50, "lat": 33, "scale": 2, "note_zh": "巴格达智慧宫" },
+    { "year": 1100, "lng": 8, "lat": 47, "scale": 2.2, "note_zh": "中世纪欧洲" },
+    { "year": 1500, "lng": 8, "lat": 47, "scale": 2.4, "note_zh": "近代欧洲蓄势" },
+    { "year": 1800, "lng": -10, "lat": 47, "scale": 1.6, "note_zh": "大西洋两岸" },
+    { "year": 2000, "lng": 30, "lat": 25, "scale": 1, "note_zh": "回归全球" }
+  ]
+}

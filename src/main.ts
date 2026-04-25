@@ -4,6 +4,7 @@ import { initTimeline } from "./viz/timeline";
 import { initTooltip } from "./viz/tooltip";
 import { initSidebar } from "./viz/sidebar";
 import { initLineage } from "./viz/lineage";
+import { initFilterBar } from "./ui/filterBar";
 import { store } from "./utils/store";
 
 async function bootstrap(): Promise<void> {
@@ -16,6 +17,7 @@ async function bootstrap(): Promise<void> {
   initTimeline();
   initTooltip();
   initSidebar();
+  initFilterBar();
   await initMap(mapRoot);
   initLineage();
 
