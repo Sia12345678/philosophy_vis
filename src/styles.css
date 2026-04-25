@@ -254,6 +254,46 @@ body {
   opacity: 1;
 }
 
+/* cinematic caption — fixed in the map viewport */
+.cinematic-caption {
+  position: absolute;
+  left: 28px;
+  bottom: 28px;
+  padding: 10px 16px 11px;
+  background: rgba(245, 241, 232, 0.92);
+  border: 1px solid var(--land-stroke);
+  box-shadow: var(--shadow);
+  font-family: var(--serif-zh);
+  color: var(--ink);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--tx-mid) ease, transform var(--tx-mid) ease;
+  pointer-events: none;
+  max-width: 260px;
+  z-index: 6;
+  backdrop-filter: blur(2px);
+}
+
+.cinematic-caption.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.caption-eyebrow {
+  display: block;
+  font-family: var(--serif-en);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--ink-faint);
+  margin-bottom: 4px;
+}
+
+.caption-note {
+  display: block;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
 /* tooltip */
 .tooltip {
   position: absolute;

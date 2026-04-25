@@ -5,6 +5,7 @@ import { initTooltip } from "./viz/tooltip";
 import { initSidebar } from "./viz/sidebar";
 import { initLineage } from "./viz/lineage";
 import { initFilterBar } from "./ui/filterBar";
+import { initCinematicCaption } from "./ui/cinematicCaption";
 import { store } from "./utils/store";
 
 async function bootstrap(): Promise<void> {
@@ -18,6 +19,7 @@ async function bootstrap(): Promise<void> {
   initTooltip();
   initSidebar();
   initFilterBar();
+  initCinematicCaption();
   await initMap(mapRoot);
   initLineage();
 

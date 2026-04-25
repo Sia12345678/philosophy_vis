@@ -42,7 +42,10 @@ export function initTimeline(): void {
     const y = Number(slider.value);
     store.set({ year: y });
     // Manual scrub exits cinematic
-    cinematicMode = false;
+    if (cinematicMode) {
+      cinematicMode = false;
+      window.dispatchEvent(new CustomEvent("cinematic:end"));
+    }
     lastWaypointIdx = -2;
   });
 
@@ -92,6 +95,7 @@ export function initTimeline(): void {
           lat: target.lat,
           scale: target.scale,
           durationMs,
+          note: target.note_zh,
         },
       }),
     );
@@ -109,6 +113,7 @@ export function initTimeline(): void {
     if (next >= 2000) {
       store.set({ year: 2000, isPlaying: false });
       cinematicMode = false;
+      window.dispatchEvent(new CustomEvent("cinematic:end"));
     } else {
       const newYear = Math.round(next);
       store.set({ year: newYear });
@@ -124,7 +129,10 @@ export function initTimeline(): void {
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
       lastTs = 0;
-      cinematicMode = false;
+      if (cinematicMode) {
+        cinematicMode = false;
+        window.dispatchEvent(new CustomEvent("cinematic:end"));
+      }
     } else {
       if (store.get("year") >= 2000) store.set({ year: -600 });
       store.set({ isPlaying: true });
