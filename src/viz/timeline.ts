@@ -96,6 +96,7 @@ export function initTimeline(): void {
           scale: target.scale,
           durationMs,
           note: target.note_zh,
+          targetYear: target.year,
         },
       }),
     );
