@@ -9,6 +9,9 @@ export interface AppState {
   searchQuery: string;
   schoolFilter: string | null;
   isPlaying: boolean;
+  loopStart: number;
+  loopEnd: number;
+  playbackSpeed: number;
 }
 
 const initial: AppState = {
@@ -20,6 +23,9 @@ const initial: AppState = {
   searchQuery: "",
   schoolFilter: null,
   isPlaying: false,
+  loopStart: -600,
+  loopEnd: 2000,
+  playbackSpeed: 1,
 };
 
 class Store {

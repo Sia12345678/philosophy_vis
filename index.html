@@ -51,7 +51,14 @@
 
       <footer class="timeline-bar">
         <button id="play" class="play-btn" aria-label="自动播放">▶</button>
+        <select id="speed-select" class="speed-select" aria-label="播放速度">
+          <option value="0.5">0.5×</option>
+          <option value="1" selected>1×</option>
+          <option value="2">2×</option>
+          <option value="4">4×</option>
+        </select>
         <div class="timeline-wrap">
+          <div class="loop-band" aria-hidden="true"></div>
           <input
             id="timeline"
             type="range"
@@ -61,6 +68,16 @@
             step="1"
           />
           <div class="timeline-ticks" aria-hidden="true"></div>
+          <button
+            class="loop-handle loop-handle-start"
+            type="button"
+            aria-label="区间起点(双击重置)"
+          ></button>
+          <button
+            class="loop-handle loop-handle-end"
+            type="button"
+            aria-label="区间终点(双击重置)"
+          ></button>
         </div>
         <div id="year-label" class="year-label">公元前 400</div>
       </footer>

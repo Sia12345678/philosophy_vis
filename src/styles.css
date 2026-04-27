@@ -688,6 +688,62 @@ body.record-mode .stage::before {
 
 .timeline-wrap {
   position: relative;
+  padding-top: 10px;
+}
+
+.speed-select {
+  background: rgba(212, 195, 162, 0.04);
+  border: 1px solid rgba(212, 195, 162, 0.18);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 4px;
+}
+.speed-select:hover {
+  border-color: rgba(212, 195, 162, 0.4);
+}
+
+.loop-band {
+  position: absolute;
+  top: 12px;
+  height: 4px;
+  background: rgba(212, 195, 162, 0.22);
+  pointer-events: none;
+  border-radius: 2px;
+  z-index: 0;
+}
+
+.loop-handle {
+  position: absolute;
+  top: 0;
+  width: 14px;
+  height: 10px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: ew-resize;
+  z-index: 3;
+  transform: translateX(-50%);
+  touch-action: none;
+}
+.loop-handle::before {
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid var(--accent);
+  margin: 0 auto;
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+.loop-handle:hover::before,
+.loop-handle:focus::before {
+  opacity: 1;
 }
 
 #timeline {
