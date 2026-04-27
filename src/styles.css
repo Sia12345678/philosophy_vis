@@ -640,7 +640,7 @@ body.record-mode .stage::before {
 /* timeline */
 .timeline-bar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto auto 1fr auto;
   align-items: center;
   gap: 18px;
   padding: 16px 28px 18px;
@@ -700,7 +700,7 @@ body.record-mode .stage::before {
   padding: 4px 6px;
   border-radius: 4px;
   cursor: pointer;
-  margin-right: 4px;
+  width: auto;
 }
 .speed-select:hover {
   border-color: rgba(212, 195, 162, 0.4);
