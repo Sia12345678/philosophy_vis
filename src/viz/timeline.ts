@@ -127,6 +127,7 @@ export function initTimeline(): void {
   slider.addEventListener("input", () => {
     const y = Number(slider.value);
     store.set({ year: y });
+    playFloat = y;
     // Manual scrub exits cinematic
     if (cinematicMode) {
       cinematicMode = false;
@@ -150,6 +151,7 @@ export function initTimeline(): void {
 
   let rafId: number | null = null;
   let lastTs = 0;
+  let playFloat = 0;
   let cinematicMode = false;
   let lastWaypointIdx = -2;
 
@@ -196,31 +198,39 @@ export function initTimeline(): void {
       rafId = null;
       return;
     }
-    if (lastTs === 0) lastTs = ts;
+    if (lastTs === 0) {
+      lastTs = ts;
+      playFloat = store.get("year");
+    }
     const dt = ts - lastTs;
     lastTs = ts;
     const speed = store.get("playbackSpeed");
     const ls = store.get("loopStart");
     const le = store.get("loopEnd");
     const isSubrange = ls > MIN_YEAR || le < MAX_YEAR;
-    const next = store.get("year") + (dt / 1000) * YEARS_PER_SEC * speed;
 
-    if (next >= le) {
+    playFloat += (dt / 1000) * YEARS_PER_SEC * speed;
+
+    if (playFloat >= le) {
       if (isSubrange) {
         // Loop back to start of selected range; re-arm camera
+        playFloat = ls;
         store.set({ year: ls });
         lastWaypointIdx = -2;
         if (cinematicMode) dispatchCameraForYear(ls);
       } else {
+        playFloat = MAX_YEAR;
         store.set({ year: MAX_YEAR, isPlaying: false });
         cinematicMode = false;
         window.dispatchEvent(new CustomEvent("cinematic:end"));
         return;
       }
     } else {
-      const newYear = Math.round(next);
-      store.set({ year: newYear });
-      dispatchCameraForYear(newYear);
+      const newYear = Math.round(playFloat);
+      if (newYear !== store.get("year")) {
+        store.set({ year: newYear });
+        dispatchCameraForYear(newYear);
+      }
     }
     rafId = requestAnimationFrame(tick);
   }
