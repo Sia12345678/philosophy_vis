@@ -318,9 +318,12 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
     const selectedId = store.get("selectedId");
     const query = store.get("searchQuery").trim().toLowerCase();
     const schoolFilter = store.get("schoolFilter");
+    const showAll =
+      store.get("showAllPhilosophers") && !store.get("isPlaying");
 
     dots.each(function (d) {
       const prox = lifespanProximity(d, year);
+      const effectiveProx = showAll ? 1 : prox;
       const matchesQuery =
         !query ||
         d.name_zh.toLowerCase().includes(query) ||
@@ -331,23 +334,25 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
 
       const sel = d3.select(this);
       sel
-        .attr("opacity", visible ? prox : 0.04)
-        .classed("dim", visible ? prox < 0.2 : true)
-        .classed("active", visible && prox >= 0.5)
+        .attr("opacity", visible ? effectiveProx : 0.04)
+        .classed("dim", visible ? effectiveProx < 0.2 : true)
+        .classed("active", visible && effectiveProx >= 0.5)
         .classed("selected", d.id === selectedId);
     });
 
     labels.each(function (d) {
       const prox = lifespanProximity(d, year);
+      const effectiveProx = showAll ? 1 : prox;
       const isHovered = d.id === hoveredId;
       const isSelected = d.id === selectedId;
-      const showLabel = isHovered || isSelected || prox >= 0.5;
+      const showLabel = isHovered || isSelected || effectiveProx >= 0.5;
       d3.select(this).classed("visible", showLabel);
     });
 
     spokes.each(function (d) {
       const prox = lifespanProximity(d, year);
-      d3.select(this).style("opacity", prox * 0.5);
+      const effectiveProx = showAll ? 1 : prox;
+      d3.select(this).style("opacity", effectiveProx * 0.5);
     });
 
     // Era switching

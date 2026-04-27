@@ -5,6 +5,7 @@ export interface AppState {
   selectedId: string | null;
   hoveredId: string | null;
   showLineage: boolean;
+  showAllPhilosophers: boolean;
   searchQuery: string;
   schoolFilter: string | null;
   isPlaying: boolean;
@@ -15,6 +16,7 @@ const initial: AppState = {
   selectedId: null,
   hoveredId: null,
   showLineage: false,
+  showAllPhilosophers: false,
   searchQuery: "",
   schoolFilter: null,
   isPlaying: false,

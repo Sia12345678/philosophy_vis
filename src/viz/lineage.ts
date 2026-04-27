@@ -107,6 +107,22 @@ export function initLineage(): void {
     const showAll = store.get("showLineage");
     const selectedId = store.get("selectedId");
     const year = store.get("year");
+    const query = store.get("searchQuery").trim().toLowerCase();
+    const schoolFilter = store.get("schoolFilter");
+    const showAllPhilosophers =
+      store.get("showAllPhilosophers") && !store.get("isPlaying");
+
+    function isVisible(p: Philosopher): boolean {
+      const matchesQuery =
+        !query ||
+        p.name_zh.toLowerCase().includes(query) ||
+        p.name_en.toLowerCase().includes(query) ||
+        p.id.includes(query);
+      const matchesSchool = !schoolFilter || p.schools.includes(schoolFilter);
+      if (!matchesQuery || !matchesSchool) return false;
+      if (showAllPhilosophers) return true;
+      return lifespanProximity(p, year) >= 0.5;
+    }
 
     paths.each(function (d) {
       const sourceP = phById.get(d.source);
@@ -115,9 +131,6 @@ export function initLineage(): void {
         d3.select(this).style("opacity", 0);
         return;
       }
-      const sourceProx = lifespanProximity(sourceP, year);
-      const targetProx = lifespanProximity(targetP, year);
-      const timeOpacity = Math.min(sourceProx, targetProx);
 
       const isFocused =
         selectedId !== null &&
@@ -126,10 +139,8 @@ export function initLineage(): void {
       let opacity = 0;
       if (isFocused) {
         opacity = 0.9;
-      } else if (showAll) {
-        // Faint web; dim further if either endpoint is way out of time
-        opacity = 0.18 * Math.max(timeOpacity, 0.25);
-        // If a philosopher is selected, fade non-focused edges
+      } else if (showAll && isVisible(sourceP) && isVisible(targetP)) {
+        opacity = 0.45;
         if (selectedId !== null) opacity *= 0.4;
       }
 
