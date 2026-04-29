@@ -3,6 +3,7 @@ import schoolsData from "../data/schools.json";
 import type { Philosopher, School } from "../utils/types";
 import { store } from "../utils/store";
 import { formatLifespan } from "../utils/i18n";
+import { mountChatPanel } from "../chat/chatPanel";
 
 const philosophers = philosophersData.philosophers as Philosopher[];
 const phById = new Map(philosophers.map((p) => [p.id, p]));
@@ -48,6 +49,8 @@ function render(p: Philosopher): string {
 
     <h3>影响</h3>
     <p>${renderLinkList(p.influenced)}</p>
+
+    <div class="chat-panel" data-philosopher-id="${p.id}"></div>
   `;
 }
 
@@ -55,7 +58,14 @@ export function initSidebar(): void {
   const sb = document.getElementById("sidebar");
   if (!sb) return;
 
+  let unmountChat: (() => void) | null = null;
+
   function show(id: string | null): void {
+    // Always tear down any previous chat first to abort streams + clear history
+    if (unmountChat) {
+      unmountChat();
+      unmountChat = null;
+    }
     if (!id) {
       sb!.classList.add("collapsed");
       sb!.setAttribute("aria-hidden", "true");
@@ -66,6 +76,10 @@ export function initSidebar(): void {
     sb!.innerHTML = render(p);
     sb!.classList.remove("collapsed");
     sb!.setAttribute("aria-hidden", "false");
+    const chatRoot = sb!.querySelector(".chat-panel") as HTMLElement | null;
+    if (chatRoot) {
+      unmountChat = mountChatPanel(p, chatRoot);
+    }
   }
 
   sb.addEventListener("click", (e) => {
