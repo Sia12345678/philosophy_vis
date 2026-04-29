@@ -637,6 +637,23 @@ body.record-mode .stage::before {
   margin-left: 6px;
 }
 
+.work-download {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--accent);
+  margin-left: 6px;
+  padding: 1px 6px;
+  border: 1px solid rgba(138, 60, 43, 0.25);
+  border-radius: 3px;
+  text-decoration: none;
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+.work-download:hover {
+  background: rgba(138, 60, 43, 0.08);
+  border-color: var(--accent);
+}
+
 /* timeline */
 .timeline-bar {
   display: grid;

@@ -5,10 +5,16 @@ export interface Location {
   lng: number;
 }
 
+export interface WorkDownload {
+  source: string;
+  url: string;
+}
+
 export interface Work {
   zh: string;
   en: string;
   year: number;
+  download?: WorkDownload;
 }
 
 export interface Philosopher {

@@ -11,6 +11,20 @@ const schoolById = new Map(
   (schoolsData.schools as School[]).map((s) => [s.id, s]),
 );
 
+function escapeAttr(s: string): string {
+  return s.replace(/[&<>"']/g, (c) =>
+    c === "&"
+      ? "&amp;"
+      : c === "<"
+      ? "&lt;"
+      : c === ">"
+      ? "&gt;"
+      : c === '"'
+      ? "&quot;"
+      : "&#39;",
+  );
+}
+
 function renderLinkList(ids: string[]): string {
   if (!ids.length) return '<span style="color:var(--ink-faint)">—</span>';
   return ids
@@ -40,7 +54,11 @@ function render(p: Philosopher): string {
     ${
       p.works.length
         ? `<h3>代表作</h3>
-    <ul>${p.works.map((w) => `<li>${w.zh} <span class="work-year">${w.en}, ${w.year}</span></li>`).join("")}</ul>`
+    <ul>${p.works.map((w) => `<li>${w.zh} <span class="work-year">${w.en}, ${w.year}</span>${
+            w.download
+              ? ` <a class="work-download" href="${escapeAttr(w.download.url)}" target="_blank" rel="noreferrer">📖 ${escapeAttr(w.download.source)}</a>`
+              : ""
+          }</li>`).join("")}</ul>`
         : ""
     }
 
