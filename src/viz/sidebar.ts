@@ -27,22 +27,26 @@ function escapeAttr(s: string): string {
 
 function renderLinkList(ids: string[]): string {
   if (!ids.length) return '<span style="color:var(--ink-faint)">—</span>';
+  const lang = store.get("nameLang");
   return ids
     .map((id) => {
       const p = phById.get(id);
-      const label = p ? p.name_zh : id;
+      const label = p ? (lang === "en" ? p.name_en : p.name_zh) : id;
       return `<a href="#" data-jump="${id}" style="color:var(--accent);text-decoration:none;border-bottom:1px dotted">${label}</a>`;
     })
-    .join("、");
+    .join(lang === "en" ? ", " : "、");
 }
 
 function render(p: Philosopher): string {
   const schoolNames = p.schools
     .map((s) => schoolById.get(s)?.name_zh ?? s)
     .join(" · ");
+  const lang = store.get("nameLang");
+  const primaryName = lang === "en" ? p.name_en : p.name_zh;
+  const secondaryName = lang === "en" ? p.name_zh : p.name_en;
   return `
     <button class="close-btn" aria-label="关闭">×</button>
-    <h2 class="sb-name">${p.name_zh}<span class="sb-name-en">${p.name_en}</span></h2>
+    <h2 class="sb-name">${primaryName}<span class="sb-name-en">${secondaryName}</span></h2>
     <div class="sb-meta">${formatLifespan(p.birth, p.death)} · ${schoolNames} · ${p.location.zh}</div>
 
     <h3>简介</h3>
@@ -115,6 +119,8 @@ export function initSidebar(): void {
 
   store.subscribe((s, prev) => {
     if (s.selectedId !== prev.selectedId) {
+      show(s.selectedId);
+    } else if (s.nameLang !== prev.nameLang && s.selectedId) {
       show(s.selectedId);
     }
   });

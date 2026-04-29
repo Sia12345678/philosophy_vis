@@ -2,6 +2,7 @@ import philosophersData from "../data/philosophers.json";
 import schoolsData from "../data/schools.json";
 import type { Philosopher, School } from "../utils/types";
 import { formatLifespan } from "../utils/i18n";
+import { store } from "../utils/store";
 
 const philosophers = philosophersData.philosophers as Philosopher[];
 const phById = new Map(philosophers.map((p) => [p.id, p]));
@@ -25,8 +26,11 @@ export function initTooltip(): void {
       .slice(0, 2)
       .map((w) => `<li>${w.zh} <span class="work-year">${w.year}</span></li>`)
       .join("");
+    const lang = store.get("nameLang");
+    const primary = lang === "en" ? p.name_en : p.name_zh;
+    const secondary = lang === "en" ? p.name_zh : p.name_en;
     return `
-      <div class="tt-name">${p.name_zh}<span class="tt-name-en">${p.name_en}</span></div>
+      <div class="tt-name">${primary}<span class="tt-name-en">${secondary}</span></div>
       <div class="tt-meta">${formatLifespan(p.birth, p.death)} · ${schoolNames}</div>
       ${
         theories

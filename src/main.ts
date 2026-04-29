@@ -105,6 +105,34 @@ async function bootstrap(): Promise<void> {
     });
   }
 
+  // Name-language toggle (zh / en)
+  const langToggle = document.querySelector(
+    ".lang-toggle",
+  ) as HTMLElement | null;
+  if (langToggle) {
+    function syncLangButtons(lang: "zh" | "en"): void {
+      langToggle!.setAttribute("data-active", lang);
+      langToggle!.querySelectorAll<HTMLButtonElement>(".lang-btn").forEach((b) => {
+        const isActive = b.getAttribute("data-lang") === lang;
+        b.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    }
+    syncLangButtons(store.get("nameLang"));
+    langToggle.querySelectorAll<HTMLButtonElement>(".lang-btn").forEach((b) => {
+      b.addEventListener("click", () => {
+        const lang = b.getAttribute("data-lang") as "zh" | "en";
+        if (lang === store.get("nameLang")) return;
+        store.set({ nameLang: lang });
+        try {
+          localStorage.setItem("philosophy_vis_name_lang", lang);
+        } catch {
+          /* ignore */
+        }
+        syncLangButtons(lang);
+      });
+    });
+  }
+
   // ---- Record mode: URL hash #record toggles a one-shot social-media layout ----
   const stageEl = document.querySelector(".stage") as HTMLElement | null;
   function fmtYear(y: number): string {

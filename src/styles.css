@@ -127,6 +127,33 @@ body {
   user-select: none;
 }
 
+.lang-toggle {
+  display: inline-flex;
+  border: 1px solid rgba(212, 195, 162, 0.35);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(212, 195, 162, 0.05);
+}
+.lang-btn {
+  background: transparent;
+  border: none;
+  font: inherit;
+  font-size: 12px;
+  font-family: var(--serif-en);
+  color: var(--ink-soft);
+  padding: 3px 10px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+}
+.lang-btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--bg);
+}
+.lang-btn:not([aria-pressed="true"]):hover {
+  color: var(--ink);
+  background: rgba(212, 195, 162, 0.15);
+}
+
 /* stage */
 .stage {
   position: relative;

@@ -209,7 +209,7 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
     .attr("x", (d) => d._x)
     .attr("y", (d) => d._y - radiusFor(d) - 3)
     .attr("text-anchor", "middle")
-    .text((d) => d.name_zh);
+    .text((d) => (store.get("nameLang") === "en" ? d.name_en : d.name_zh));
 
   // Connecting hairlines from each clock-positioned dot to its city anchor
   // (only for dots that were displaced by the clock layout)
@@ -340,13 +340,17 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
         .classed("selected", d.id === selectedId);
     });
 
+    const lang = store.get("nameLang");
     labels.each(function (d) {
       const prox = lifespanProximity(d, year);
       const effectiveProx = showAll ? 1 : prox;
       const isHovered = d.id === hoveredId;
       const isSelected = d.id === selectedId;
       const showLabel = isHovered || isSelected || effectiveProx >= 0.5;
-      d3.select(this).classed("visible", showLabel);
+      const sel = d3.select(this);
+      sel.classed("visible", showLabel);
+      const want = lang === "en" ? d.name_en : d.name_zh;
+      if (sel.text() !== want) sel.text(want);
     });
 
     spokes.each(function (d) {

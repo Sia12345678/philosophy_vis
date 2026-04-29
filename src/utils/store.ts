@@ -12,6 +12,7 @@ export interface AppState {
   loopStart: number;
   loopEnd: number;
   playbackSpeed: number;
+  nameLang: "zh" | "en";
 }
 
 const initial: AppState = {
@@ -26,6 +27,10 @@ const initial: AppState = {
   loopStart: -600,
   loopEnd: 2000,
   playbackSpeed: 1,
+  nameLang: (typeof localStorage !== "undefined" &&
+    localStorage.getItem("philosophy_vis_name_lang") === "en"
+    ? "en"
+    : "zh") as "zh" | "en",
 };
 
 class Store {
