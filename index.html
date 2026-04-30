@@ -40,8 +40,31 @@
             <button type="button" class="lang-btn" data-lang="zh" aria-pressed="true">中</button>
             <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
           </div>
+          <button
+            id="donate-btn"
+            type="button"
+            class="donate-btn"
+            aria-label="请作者喝杯茶 / Buy me a tea"
+            title="请作者喝杯茶 / Buy me a tea"
+          >☕</button>
         </div>
       </header>
+
+      <div id="donate-modal" class="donate-modal" hidden role="dialog" aria-labelledby="donate-title" aria-modal="true">
+        <div class="donate-backdrop"></div>
+        <div class="donate-card">
+          <button type="button" class="donate-close" aria-label="关闭">×</button>
+          <h3 id="donate-title">谢谢你想支持这个项目 ☕</h3>
+          <p class="donate-sub">A small thank-you means a lot.</p>
+          <div class="donate-methods">
+            <figure class="donate-method">
+              <img src="./donate/wechat.jpg" alt="微信收款码" />
+              <figcaption>微信扫一扫</figcaption>
+            </figure>
+          </div>
+          <p class="donate-footer">未来还会加上其它支付方式 · More options coming.</p>
+        </div>
+      </div>
 
       <main class="stage">
         <div id="map-root"></div>

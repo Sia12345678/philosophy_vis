@@ -105,6 +105,38 @@ async function bootstrap(): Promise<void> {
     });
   }
 
+  // Donate modal
+  const donateBtn = document.getElementById(
+    "donate-btn",
+  ) as HTMLButtonElement | null;
+  const donateModal = document.getElementById(
+    "donate-modal",
+  ) as HTMLElement | null;
+  if (donateBtn && donateModal) {
+    const closeBtn = donateModal.querySelector(
+      ".donate-close",
+    ) as HTMLButtonElement | null;
+    const backdrop = donateModal.querySelector(
+      ".donate-backdrop",
+    ) as HTMLElement | null;
+    function open(): void {
+      donateModal!.hidden = false;
+      requestAnimationFrame(() => donateModal!.classList.add("visible"));
+    }
+    function close(): void {
+      donateModal!.classList.remove("visible");
+      window.setTimeout(() => {
+        donateModal!.hidden = true;
+      }, 200);
+    }
+    donateBtn.addEventListener("click", open);
+    closeBtn?.addEventListener("click", close);
+    backdrop?.addEventListener("click", close);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !donateModal.hidden) close();
+    });
+  }
+
   // Name-language toggle (zh / en)
   const langToggle = document.querySelector(
     ".lang-toggle",
