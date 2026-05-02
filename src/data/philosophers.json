@@ -131,7 +131,11 @@
         {
           "zh": "道德经",
           "en": "Tao Te Ching",
-          "year": -500
+          "year": -500,
+          "download": {
+            "source": "ctext.org",
+            "url": "https://ctext.org/dao-de-jing"
+          }
         }
       ],
       "teachers": [],
@@ -251,7 +255,11 @@
         {
           "zh": "论语",
           "en": "Analects",
-          "year": -450
+          "year": -450,
+          "download": {
+            "source": "ctext.org",
+            "url": "https://ctext.org/analects"
+          }
         }
       ],
       "teachers": [],
@@ -477,7 +485,11 @@
         {
           "zh": "墨子",
           "en": "Mozi",
-          "year": -400
+          "year": -400,
+          "download": {
+            "source": "ctext.org",
+            "url": "https://ctext.org/mozi"
+          }
         }
       ],
       "teachers": [],
@@ -694,7 +706,11 @@
         {
           "zh": "商君书",
           "en": "Book of Lord Shang",
-          "year": -340
+          "year": -340,
+          "download": {
+            "source": "ctext.org",
+            "url": "https://ctext.org/shang-jun-shu"
+          }
         }
       ],
       "teachers": [],
@@ -736,7 +752,11 @@
         {
           "zh": "形而上学",
           "en": "Metaphysics",
-          "year": -340
+          "year": -340,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/aristotlesmetaph0001aris"
+          }
         },
         {
           "zh": "尼各马可伦理学",
@@ -750,7 +770,11 @@
         {
           "zh": "工具论",
           "en": "Organon",
-          "year": -350
+          "year": -350,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/AristotleOrganon"
+          }
         }
       ],
       "teachers": [
@@ -799,7 +823,11 @@
         {
           "zh": "孟子",
           "en": "Mencius",
-          "year": -300
+          "year": -300,
+          "download": {
+            "source": "ctext.org",
+            "url": "https://ctext.org/mengzi"
+          }
         }
       ],
       "teachers": [],
@@ -842,7 +870,11 @@
         {
           "zh": "庄子",
           "en": "Zhuangzi",
-          "year": -300
+          "year": -300,
+          "download": {
+            "source": "ctext.org",
+            "url": "https://ctext.org/zhuangzi"
+          }
         }
       ],
       "teachers": [],
@@ -991,7 +1023,11 @@
         {
           "zh": "荀子",
           "en": "Xunzi",
-          "year": -250
+          "year": -250,
+          "download": {
+            "source": "ctext.org",
+            "url": "https://ctext.org/xunzi"
+          }
         }
       ],
       "teachers": [],
@@ -1033,7 +1069,11 @@
         {
           "zh": "韩非子",
           "en": "Han Feizi",
-          "year": -240
+          "year": -240,
+          "download": {
+            "source": "ctext.org",
+            "url": "https://ctext.org/hanfeizi"
+          }
         }
       ],
       "teachers": [
@@ -1076,7 +1116,11 @@
         {
           "zh": "春秋繁露",
           "en": "Luxuriant Dew of the Spring and Autumn",
-          "year": -120
+          "year": -120,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/ChunqiuFanlu"
+          }
         }
       ],
       "teachers": [],
@@ -1126,7 +1170,11 @@
         {
           "zh": "论共和国",
           "en": "On the Republic",
-          "year": -54
+          "year": -54,
+          "download": {
+            "source": "Project Gutenberg",
+            "url": "https://www.gutenberg.org/ebooks/54161"
+          }
         }
       ],
       "teachers": [],
@@ -1170,7 +1218,11 @@
         {
           "zh": "道德书简",
           "en": "Moral Letters to Lucilius",
-          "year": 65
+          "year": 65,
+          "download": {
+            "source": "Standard Ebooks",
+            "url": "https://standardebooks.org/ebooks/seneca/moral-letters-to-lucilius/richard-m-gummere"
+          }
         }
       ],
       "teachers": [],
@@ -1302,7 +1354,11 @@
         {
           "zh": "中论",
           "en": "Mūlamadhyamakakārikā",
-          "year": 200
+          "year": 200,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/fundamentalwisdo0000naga"
+          }
         }
       ],
       "teachers": [],
@@ -1345,7 +1401,11 @@
         {
           "zh": "九章集",
           "en": "Enneads",
-          "year": 270
+          "year": 270,
+          "download": {
+            "source": "Project Gutenberg",
+            "url": "https://www.gutenberg.org/ebooks/42930"
+          }
         }
       ],
       "teachers": [],
@@ -1387,7 +1447,11 @@
         {
           "zh": "老子注",
           "en": "Commentary on Laozi",
-          "year": 245
+          "year": 245,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/classicofwayvirt0000laoz"
+          }
         }
       ],
       "teachers": [],
@@ -1536,7 +1600,11 @@
         {
           "zh": "六祖坛经",
           "en": "Platform Sutra",
-          "year": 700
+          "year": 700,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/platformsutraofs0000huin"
+          }
         }
       ],
       "teachers": [],
@@ -1698,7 +1766,11 @@
         {
           "zh": "美德城",
           "en": "The Virtuous City",
-          "year": 940
+          "year": 940,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/al-farabi-on-the-perfect-state-walzer"
+          }
         }
       ],
       "teachers": [],
@@ -1743,12 +1815,20 @@
         {
           "zh": "治疗论",
           "en": "The Book of Healing",
-          "year": 1027
+          "year": 1027,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/avicenna-the-physics-of-the-healing-kitab-al-shifa-a-parallel-english-arabic-text-in-two-volumes"
+          }
         },
         {
           "zh": "医典",
           "en": "The Canon of Medicine",
-          "year": 1025
+          "year": 1025,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/the-canon-of-medicine-volume-4_202403"
+          }
         }
       ],
       "teachers": [],
@@ -1910,7 +1990,11 @@
         {
           "zh": "证明",
           "en": "Proslogion",
-          "year": 1078
+          "year": 1078,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/monologionandpro0000anse"
+          }
         }
       ],
       "teachers": [],
@@ -1989,12 +2073,20 @@
         {
           "zh": "哲学家的矛盾",
           "en": "The Incoherence of the Philosophers",
-          "year": 1095
+          "year": 1095,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/the-incoherence-of-the-philosophers-2nd-edition-brigham-young-university-islamic"
+          }
         },
         {
           "zh": "宗教学的复兴",
           "en": "Revival of the Religious Sciences",
-          "year": 1106
+          "year": 1106,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/the-revival-of-the-religious-sciences-volume-1"
+          }
         }
       ],
       "teachers": [],
@@ -2075,7 +2167,11 @@
         {
           "zh": "矛盾的矛盾",
           "en": "The Incoherence of the Incoherence",
-          "year": 1180
+          "year": 1180,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/the-incoherence-of-the-incoherence"
+          }
         }
       ],
       "teachers": [],
@@ -2305,7 +2401,11 @@
         {
           "zh": "反异教大全",
           "en": "Summa contra Gentiles",
-          "year": 1264
+          "year": 1264,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/summacontragenti0000thom_x5f5"
+          }
         }
       ],
       "teachers": [],
@@ -2425,7 +2525,11 @@
         {
           "zh": "历史绪论",
           "en": "Muqaddimah",
-          "year": 1377
+          "year": 1377,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/almuqaddimah00ibnk"
+          }
         }
       ],
       "teachers": [],
@@ -2520,7 +2624,11 @@
         {
           "zh": "论李维",
           "en": "Discourses on Livy",
-          "year": 1517
+          "year": 1517,
+          "download": {
+            "source": "Standard Ebooks",
+            "url": "https://standardebooks.org/ebooks/niccolo-machiavelli/discourses-on-livy/ninian-hill-thomson"
+          }
         }
       ],
       "teachers": [],
@@ -3041,7 +3149,11 @@
         {
           "zh": "单子论",
           "en": "Monadology",
-          "year": 1714
+          "year": 1714,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/monadologyandot00leibgoog"
+          }
         }
       ],
       "teachers": [],
@@ -3502,7 +3614,11 @@
         {
           "zh": "道德与立法原理",
           "en": "Principles of Morals and Legislation",
-          "year": 1789
+          "year": 1789,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/introductiontopr00bent_0"
+          }
         }
       ],
       "teachers": [],
@@ -3545,7 +3661,11 @@
         {
           "zh": "知识学基础",
           "en": "Foundations of the Science of Knowledge",
-          "year": 1794
+          "year": 1794,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/scienceofknowled00fich"
+          }
         }
       ],
       "teachers": [],
@@ -3589,12 +3709,25 @@
         {
           "zh": "精神现象学",
           "en": "Phenomenology of Spirit",
-          "year": 1807
+          "year": 1807,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/phenomenologyofm00hege"
+          }
         },
         {
           "zh": "逻辑学",
           "en": "Science of Logic",
-          "year": 1816
+          "year": 1816,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/hegelsscienceofl0000hege_w8q2"
+          }
+        },
+        {
+          "zh": "法哲学原理",
+          "en": "Elements of the Philosophy of Right",
+          "year": 1821
         }
       ],
       "teachers": [],
@@ -3641,7 +3774,11 @@
         {
           "zh": "先验唯心论体系",
           "en": "System of Transcendental Idealism",
-          "year": 1800
+          "year": 1800,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/systemoftranscen0000sche"
+          }
         }
       ],
       "teachers": [],
@@ -3731,7 +3868,11 @@
         {
           "zh": "实证哲学教程",
           "en": "Course in Positive Philosophy",
-          "year": 1842
+          "year": 1842,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/socialphysicsfr00martgoog"
+          }
         }
       ],
       "teachers": [],
@@ -3836,12 +3977,20 @@
         {
           "zh": "或此或彼",
           "en": "Either/Or",
-          "year": 1843
+          "year": 1843,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/eitheror0001kier"
+          }
         },
         {
           "zh": "恐惧与战栗",
           "en": "Fear and Trembling",
-          "year": 1843
+          "year": 1843,
+          "download": {
+            "source": "Standard Ebooks",
+            "url": "https://standardebooks.org/ebooks/soren-kierkegaard/fear-and-trembling"
+          }
         }
       ],
       "teachers": [],
@@ -3898,7 +4047,11 @@
         {
           "zh": "资本论",
           "en": "Das Kapital",
-          "year": 1867
+          "year": 1867,
+          "download": {
+            "source": "Standard Ebooks",
+            "url": "https://standardebooks.org/ebooks/karl-marx/the-capital/samuel-moore_edward-aveling"
+          }
         }
       ],
       "teachers": [],
@@ -4108,7 +4261,11 @@
         {
           "zh": "概念文字",
           "en": "Begriffsschrift",
-          "year": 1879
+          "year": 1879,
+          "download": {
+            "source": "Internet Archive",
+            "url": "https://archive.org/details/gottlob-frege-begriffsschrift-english"
+          }
         }
       ],
       "teachers": [],
