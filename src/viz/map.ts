@@ -343,9 +343,16 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
     labels.each(function (d) {
       const prox = lifespanProximity(d, year);
       const effectiveProx = showAll ? 1 : prox;
+      const matchesQuery =
+        !query ||
+        d.name_zh.toLowerCase().includes(query) ||
+        d.name_en.toLowerCase().includes(query) ||
+        d.id.includes(query);
+      const matchesSchool = !schoolFilter || d.schools.includes(schoolFilter);
+      const visible = matchesQuery && matchesSchool;
       const isHovered = d.id === hoveredId;
       const isSelected = d.id === selectedId;
-      const showLabel = isHovered || isSelected || effectiveProx >= 0.5;
+      const showLabel = visible && (isHovered || isSelected || effectiveProx >= 0.5);
       const sel = d3.select(this);
       sel.classed("visible", showLabel);
       const want = lang === "en" ? d.name_en : d.name_zh;
@@ -355,7 +362,8 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
     spokes.each(function (d) {
       const prox = lifespanProximity(d, year);
       const effectiveProx = showAll ? 1 : prox;
-      d3.select(this).style("opacity", effectiveProx * 0.5);
+      const matchesSchool = !schoolFilter || d.schools.includes(schoolFilter);
+      d3.select(this).style("opacity", matchesSchool ? effectiveProx * 0.5 : 0);
     });
 
     // Era switching
