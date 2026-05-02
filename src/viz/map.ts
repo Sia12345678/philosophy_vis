@@ -318,8 +318,7 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
     const selectedId = store.get("selectedId");
     const query = store.get("searchQuery").trim().toLowerCase();
     const schoolFilter = store.get("schoolFilter");
-    const showAll =
-      store.get("showAllPhilosophers") && !store.get("isPlaying");
+    const showAll = store.get("showAllPhilosophers");
 
     dots.each(function (d) {
       const prox = lifespanProximity(d, year);

@@ -109,8 +109,7 @@ export function initLineage(): void {
     const year = store.get("year");
     const query = store.get("searchQuery").trim().toLowerCase();
     const schoolFilter = store.get("schoolFilter");
-    const showAllPhilosophers =
-      store.get("showAllPhilosophers") && !store.get("isPlaying");
+    const showAllPhilosophers = store.get("showAllPhilosophers");
 
     function isVisible(p: Philosopher): boolean {
       const matchesQuery =
