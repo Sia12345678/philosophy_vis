@@ -3727,7 +3727,11 @@
         {
           "zh": "法哲学原理",
           "en": "Elements of the Philosophy of Right",
-          "year": 1821
+          "year": 1821,
+          "download": {
+            "source": "Project Gutenberg",
+            "url": "https://www.gutenberg.org/ebooks/33439"
+          }
         }
       ],
       "teachers": [],
