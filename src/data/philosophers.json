@@ -5519,20 +5519,34 @@
         {
           "zh": "重力与恩典",
           "en": "Gravity and Grace",
-          "year": 1947
+          "year": 1947,
+          "download": {
+            "source": "fr.Wikisource",
+            "url": "https://fr.wikisource.org/wiki/La_Pesanteur_et_la_Gr%C3%A2ce"
+          }
         },
         {
           "zh": "扎根",
           "en": "The Need for Roots",
-          "year": 1949
+          "year": 1949,
+          "download": {
+            "source": "fr.Wikisource",
+            "url": "https://fr.wikisource.org/wiki/L%E2%80%99Enracinement"
+          }
         },
         {
           "zh": "压迫与自由",
           "en": "Oppression and Liberty",
-          "year": 1955
+          "year": 1955,
+          "download": {
+            "source": "fr.Wikisource",
+            "url": "https://fr.wikisource.org/wiki/Oppression_et_Libert%C3%A9"
+          }
         }
       ],
-      "teachers": [],
+      "teachers": [
+        "alain"
+      ],
       "influenced_by": [
         "plato",
         "epictetus",
@@ -5543,6 +5557,85 @@
         "camus"
       ],
       "bio_zh": "法国哲学家、神秘主义者、社会活动家。出身犹太知识分子家庭,亲赴工厂劳动以体验工人处境,后皈依基督教神秘主义。以\"注意力\"与\"扎根\"为核心,将政治哲学、劳动伦理与宗教经验熔于一炉,34岁在英国因拒绝进食而早逝。"
+    },
+    {
+      "id": "alain",
+      "name_zh": "阿兰",
+      "name_en": "Alain (Émile-Auguste Chartier)",
+      "birth": 1868,
+      "death": 1951,
+      "location": {
+        "zh": "巴黎",
+        "en": "Paris",
+        "lat": 48.85,
+        "lng": 2.35
+      },
+      "schools": [
+        "continental"
+      ],
+      "influence_tier": 3,
+      "theories_zh": [
+        "幸福论",
+        "战争批判",
+        "感知与理性",
+        "公民义务"
+      ],
+      "theories_en": [
+        "On Happiness",
+        "Critique of war",
+        "Perception and reason",
+        "Civic duty"
+      ],
+      "works": [
+        {
+          "zh": "言谈录",
+          "en": "Propos",
+          "year": 1920,
+          "download": {
+            "source": "fr.Wikisource",
+            "url": "https://fr.wikisource.org/wiki/Les_Propos_d%E2%80%99Alain_(1920)/Tome_1"
+          }
+        },
+        {
+          "zh": "美的体系",
+          "en": "Système des beaux-arts",
+          "year": 1920,
+          "download": {
+            "source": "fr.Wikisource",
+            "url": "https://fr.wikisource.org/wiki/Syst%C3%A8me_des_Beaux-Arts"
+          }
+        },
+        {
+          "zh": "战争裁判",
+          "en": "Mars ou la guerre jugée",
+          "year": 1921,
+          "download": {
+            "source": "fr.Wikisource",
+            "url": "https://fr.wikisource.org/wiki/Mars_ou_la_Guerre_jug%C3%A9e"
+          }
+        },
+        {
+          "zh": "诸神",
+          "en": "Les Dieux",
+          "year": 1934,
+          "download": {
+            "source": "fr.Wikisource",
+            "url": "https://fr.wikisource.org/wiki/Les_Dieux_(Alain)"
+          }
+        }
+      ],
+      "teachers": [],
+      "influenced_by": [
+        "plato",
+        "descartes",
+        "kant",
+        "epictetus",
+        "marcus_aurelius"
+      ],
+      "influenced": [
+        "simone_weil"
+      ],
+      "bio_zh": "法国哲学家、散文家,笔名\"阿兰\"。长期执教巴黎亨利四世中学,西蒙娜·韦伊是其最著名的弟子。以数千篇短篇随笔《言谈录》著称,将柏拉图、笛卡尔、康德的思想熔为一炉,强调理性自律与公民批判精神,是两战之间法国知识界的精神坐标。"
     }
   ]
 }
