@@ -5242,7 +5242,8 @@
       "teachers": [],
       "influenced_by": [
         "nietzsche",
-        "kierkegaard"
+        "kierkegaard",
+        "simone_weil"
       ],
       "influenced": [],
       "bio_zh": "阿尔及利亚出生的法国作家,诺贝尔文学奖得主。以\"荒谬\"概括生命的根本处境,主张在无意义中通过反抗肯定生命,与萨特断交。"
@@ -5484,6 +5485,64 @@
       ],
       "influenced": [],
       "bio_zh": "美国分析哲学家,神童出身。其《命名与必然性》三场普林斯顿演讲重新树立了形而上学,把模态逻辑与必然性研究带回分析哲学主流。"
+    },
+    {
+      "id": "simone_weil",
+      "name_zh": "西蒙娜·韦伊",
+      "name_en": "Simone Weil",
+      "birth": 1909,
+      "death": 1943,
+      "location": {
+        "zh": "巴黎",
+        "en": "Paris",
+        "lat": 48.8566,
+        "lng": 2.3522
+      },
+      "schools": [
+        "continental",
+        "marxism"
+      ],
+      "influence_tier": 3,
+      "theories_zh": [
+        "重力与恩典",
+        "扎根",
+        "劳动的神圣性",
+        "苦难与注意力"
+      ],
+      "theories_en": [
+        "Gravity and Grace",
+        "The Need for Roots",
+        "Sacred labor",
+        "Affliction and attention"
+      ],
+      "works": [
+        {
+          "zh": "重力与恩典",
+          "en": "Gravity and Grace",
+          "year": 1947
+        },
+        {
+          "zh": "扎根",
+          "en": "The Need for Roots",
+          "year": 1949
+        },
+        {
+          "zh": "压迫与自由",
+          "en": "Oppression and Liberty",
+          "year": 1955
+        }
+      ],
+      "teachers": [],
+      "influenced_by": [
+        "plato",
+        "epictetus",
+        "marcus_aurelius",
+        "marx"
+      ],
+      "influenced": [
+        "camus"
+      ],
+      "bio_zh": "法国哲学家、神秘主义者、社会活动家。出身犹太知识分子家庭,亲赴工厂劳动以体验工人处境,后皈依基督教神秘主义。以\"注意力\"与\"扎根\"为核心,将政治哲学、劳动伦理与宗教经验熔于一炉,34岁在英国因拒绝进食而早逝。"
     }
   ]
 }
