@@ -68,6 +68,18 @@ export function initFilterBar(): void {
   const select = document.getElementById("school-filter") as HTMLSelectElement | null;
   if (!select) return;
 
+  const allOption = select.options[0];
+  const compactQuery = window.matchMedia(
+    "(max-width: 520px), (max-width: 900px) and (max-height: 560px)",
+  );
+  const syncAllLabel = (): void => {
+    allOption.textContent = compactQuery.matches
+      ? "全部流派"
+      : "全部流派 · All Schools";
+  };
+  syncAllLabel();
+  compactQuery.addEventListener("change", syncAllLabel);
+
   const schoolById = new Map(schools.map((s) => [s.id, s]));
   for (const family of FAMILIES) {
     const og = document.createElement("optgroup");

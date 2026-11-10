@@ -95,13 +95,18 @@ export function initLineage(): void {
     .attr("data-source", (d) => d.source)
     .attr("data-target", (d) => d.target)
     .attr("vector-effect", "non-scaling-stroke")
-    .attr("d", (d) => {
+    .style("opacity", 0);
+
+  function layoutPaths(): void {
+    paths.attr("d", (d) => {
       const a = getDotPos(d.source);
       const b = getDotPos(d.target);
       if (!a || !b) return "";
       return curvePath(a, b);
-    })
-    .style("opacity", 0);
+    });
+  }
+
+  layoutPaths();
 
   function applyState(): void {
     const showAll = store.get("showLineage");
@@ -153,5 +158,6 @@ export function initLineage(): void {
   }
 
   store.subscribe(() => applyState());
+  window.addEventListener("map:layout", layoutPaths);
   applyState();
 }

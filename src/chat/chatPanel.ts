@@ -249,13 +249,6 @@ export function mountChatPanel(
     }
   });
 
-  // If no settings, open the panel up-front so user knows what to do
-  if (!loadSettings()) {
-    state.settingsOpen = true;
-    settingsEl.hidden = false;
-    renderSettings();
-  }
-
   // Unmount: abort any running stream
   return () => {
     state.abort?.abort();

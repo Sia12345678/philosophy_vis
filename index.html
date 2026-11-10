@@ -2,7 +2,7 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>哲学家星图 · Philosophers Across Time & Place</title>
     <link rel="icon" type="image/svg+xml" href="./logo.svg" />
     <link rel="apple-touch-icon" href="./logo.svg" />
@@ -30,15 +30,14 @@
           <select id="school-filter" class="school-select" aria-label="按流派筛选">
             <option value="">全部流派 · All Schools</option>
           </select>
-          <input id="search" type="search" placeholder="搜索 / Search…" />
-          <label class="toggle">
-            <input id="toggle-lineage" type="checkbox" />
-            <span>显示影响连线</span>
-          </label>
-          <label class="toggle">
-            <input id="toggle-show-all" type="checkbox" />
-            <span>显示所有人</span>
-          </label>
+          <input
+            id="search"
+            type="search"
+            aria-label="搜索哲学家 / Search philosophers"
+            placeholder="搜索 / Search…"
+          />
+        </div>
+        <div class="topbar-utility">
           <div
             class="lang-toggle"
             role="group"
@@ -74,7 +73,34 @@
       </div>
 
       <main class="stage">
-        <div id="map-root"></div>
+        <div id="map-root">
+          <div class="map-era" aria-live="polite">
+            <span class="map-era-kicker">时代</span>
+            <strong id="map-era-name">轴心时代</strong>
+          </div>
+          <div class="map-tools" aria-label="地图图层与视图">
+            <label class="toggle toggle-lineage">
+              <input id="toggle-lineage" type="checkbox" />
+              <span>影响连线</span>
+            </label>
+            <label class="toggle toggle-show-all">
+              <input id="toggle-show-all" type="checkbox" />
+              <span>全部年代</span>
+            </label>
+            <button
+              id="reset-view"
+              type="button"
+              class="map-reset"
+              aria-label="复位到世界全景"
+              title="复位到世界全景"
+              hidden
+            >⟲ <span>世界</span></button>
+          </div>
+          <div class="map-legend" aria-hidden="true">
+            <span class="legend-item"><i class="legend-swatch"></i>颜色 = 流派</span>
+            <span class="legend-item"><i class="legend-size"></i>圆点大小 = 影响力</span>
+          </div>
+        </div>
         <aside id="sidebar" class="sidebar collapsed" aria-hidden="true"></aside>
         <div id="tooltip" class="tooltip" aria-hidden="true"></div>
         <div id="cinematic-caption" class="cinematic-caption" aria-hidden="true">
@@ -101,6 +127,7 @@
           <input
             id="timeline"
             type="range"
+            aria-label="时间轴"
             min="-600"
             max="2000"
             value="-400"

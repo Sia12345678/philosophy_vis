@@ -45,6 +45,7 @@ function render(p: Philosopher): string {
   const primaryName = lang === "en" ? p.name_en : p.name_zh;
   const secondaryName = lang === "en" ? p.name_zh : p.name_en;
   return `
+    <div class="sheet-grabber" aria-hidden="true"></div>
     <button class="close-btn" aria-label="关闭">×</button>
     <h2 class="sb-name">${primaryName}<span class="sb-name-en">${secondaryName}</span></h2>
     <div class="sb-meta">${formatLifespan(p.birth, p.death)} · ${schoolNames} · ${p.location.zh}</div>
@@ -98,6 +99,7 @@ export function initSidebar(): void {
     sb!.innerHTML = render(p);
     sb!.classList.remove("collapsed");
     sb!.setAttribute("aria-hidden", "false");
+    sb!.scrollTop = 0;
     const chatRoot = sb!.querySelector(".chat-panel") as HTMLElement | null;
     if (chatRoot) {
       unmountChat = mountChatPanel(p, chatRoot);
