@@ -684,6 +684,8 @@ body {
 
 .philosopher-label.visible {
   opacity: 1;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .cluster-label {

@@ -442,7 +442,12 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
       .merge(labelJoin)
       .attr("x", (d) => d._x)
       .attr("data-id", (d) => d.id)
-      .text((d) => (store.get("nameLang") === "en" ? d.name_en : d.name_zh));
+      .text((d) => (store.get("nameLang") === "en" ? d.name_en : d.name_zh))
+      .on("click", function (event: MouseEvent, d) {
+        event.stopPropagation();
+        const current = store.get("selectedId");
+        store.set({ selectedId: current === d.id ? null : d.id });
+      });
 
     const clusterJoin = labelsGroup
       .selectAll<SVGTextElement, CityCluster>("text.cluster-label")

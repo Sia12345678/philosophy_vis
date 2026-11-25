@@ -984,6 +984,47 @@ async function runPlaybackLabels(browser, baseUrl, origin) {
   await context.close();
 }
 
+async function runLabelSelection(browser, baseUrl, origin) {
+  const { context, page, errors } = await createPage(browser, origin, {
+    width: 1440,
+    height: 900,
+  });
+  await loadApp(page, baseUrl);
+  await dismissChooser(page);
+  await page.locator("#timeline").evaluate((input) => {
+    input.value = "1780";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await page.evaluate(() =>
+    window.dispatchEvent(
+      new CustomEvent("camera:target", {
+        detail: { lng: 10, lat: 50, scale: 5, durationMs: 80 },
+      }),
+    ),
+  );
+  await page.waitForTimeout(900);
+  const label = page.locator("text.philosopher-label.visible").first();
+  const labelText = (await label.textContent())?.trim() ?? "";
+  check("label selection: a philosopher label is visible", labelText.length > 0, labelText);
+  if (labelText) {
+    await label.click();
+    await page.locator("#sidebar:not(.collapsed)").waitFor({ state: "visible" });
+    const sidebarName = await page.locator("#sidebar .sb-name").innerText();
+    check(
+      "label selection: clicking a name opens the right sidebar",
+      normalizeText(sidebarName).includes(normalizeText(labelText)),
+      `${labelText} => ${sidebarName}`,
+    );
+    await page.locator("#sidebar .close-btn").click();
+  }
+  check(
+    "label selection: no console or page errors",
+    errors.length === 0,
+    errors.join(" | "),
+  );
+  await context.close();
+}
+
 async function runExistingFeatures(browser, baseUrl, origin) {
   const { context, page, errors } = await createPage(browser, origin, {
     width: 1024,
@@ -1602,6 +1643,7 @@ try {
   await runResponsiveAndLabels(browser, baseUrl, origin);
   await runReducedMotion(browser, baseUrl, origin);
   await runPlaybackLabels(browser, baseUrl, origin);
+  await runLabelSelection(browser, baseUrl, origin);
   await runExistingFeatures(browser, baseUrl, origin);
   await runChatKeyRedaction(browser, baseUrl, origin);
   await runCustomQuestionAndTheme(browser, baseUrl, origin);
