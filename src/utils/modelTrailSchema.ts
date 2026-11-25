@@ -122,7 +122,8 @@ export function buildTrailFromPlan(
 
   const philosopherById = new Map(philosophers.map((p) => [p.id, p]));
   const seen = new Set<string>();
-  const steps: TrailStep[] = plan.steps.map((value, index) => {
+  const steps: TrailStep[] = [];
+  for (const [index, value] of plan.steps.entries()) {
     if (!value || typeof value !== "object") {
       throw new Error(`step ${index + 1} is not an object`);
     }
@@ -130,7 +131,7 @@ export function buildTrailFromPlan(
     const philosopherId = readText(step.philosopherId, "philosopherId", 80);
     const philosopher = philosopherById.get(philosopherId);
     if (!philosopher) throw new Error(`unknown philosopher ${philosopherId}`);
-    if (seen.has(philosopherId)) throw new Error(`duplicate philosopher ${philosopherId}`);
+    if (seen.has(philosopherId)) continue;
     seen.add(philosopherId);
 
     const theoryIndex = Number(step.theoryIndex);
@@ -144,15 +145,20 @@ export function buildTrailFromPlan(
 
     const questionZh = readText(step.question_zh, "question_zh", 180);
     const questionEn = readOptionalText(step.question_en, "question_en", 240) || questionZh;
-    return {
+    steps.push({
       philosopherId,
       theoryIndex,
       question_zh: questionZh,
       question_en: questionEn,
       bridge_zh: "",
       bridge_en: "",
-    };
-  });
+    });
+  }
+  if (steps.length < 6) {
+    throw new Error(
+      `model returned ${steps.length} unique philosophers; expected 6-8`,
+    );
+  }
 
   const compactQuestion = shortQuestion(question);
   return {
