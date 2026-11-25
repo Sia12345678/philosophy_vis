@@ -925,6 +925,65 @@ async function runReducedMotion(browser, baseUrl, origin) {
   await context.close();
 }
 
+async function runPlaybackLabels(browser, baseUrl, origin) {
+  const { context, page, errors } = await createPage(browser, origin, {
+    width: 1024,
+    height: 768,
+  });
+  await loadApp(page, baseUrl);
+  await dismissChooser(page);
+  await page.locator("#timeline").evaluate((input) => {
+    input.value = "1600";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await page.waitForTimeout(300);
+  await page.locator("#play").click();
+  await page.waitForTimeout(2500);
+
+  const readLabels = () =>
+    page.evaluate(() =>
+      [
+        ...document.querySelectorAll(
+          "text.philosopher-label.visible, text.cluster-label.visible",
+        ),
+      ].map((element) => ({
+        text: (element.textContent ?? "").replace(/\s+/g, " ").trim(),
+        opacity: Number(getComputedStyle(element).opacity),
+      })),
+    );
+  const labels = await readLabels();
+  const labelText = labels.map((label) => label.text).join(" ");
+  await page.waitForTimeout(600);
+  const settledLabels = await readLabels();
+  const allLabels = [...labels, ...settledLabels];
+  const fullOpacity = allLabels.filter((label) => label.opacity > 0.9);
+  check(
+    "playback: visible labels reach full opacity",
+    fullOpacity.length > 0,
+    JSON.stringify(allLabels),
+  );
+  check(
+    "playback: labels carry philosopher names",
+    labels.length > 0 &&
+      philosophers.some((philosopher) => labelText.includes(philosopher.name_zh)),
+    labelText,
+  );
+  check(
+    "playback: visible labels are never blank",
+    labels.every((label) => label.text.length > 0),
+    JSON.stringify(labels),
+  );
+  check(
+    "playback labels: no console or page errors",
+    errors.length === 0,
+    errors.join(" | "),
+  );
+  if (await page.locator("#play").evaluate((element) => element.classList.contains("playing"))) {
+    await page.locator("#play").click();
+  }
+  await context.close();
+}
+
 async function runExistingFeatures(browser, baseUrl, origin) {
   const { context, page, errors } = await createPage(browser, origin, {
     width: 1024,
@@ -1542,6 +1601,7 @@ try {
   await runProgressAndKeyboard(browser, baseUrl, origin);
   await runResponsiveAndLabels(browser, baseUrl, origin);
   await runReducedMotion(browser, baseUrl, origin);
+  await runPlaybackLabels(browser, baseUrl, origin);
   await runExistingFeatures(browser, baseUrl, origin);
   await runChatKeyRedaction(browser, baseUrl, origin);
   await runCustomQuestionAndTheme(browser, baseUrl, origin);

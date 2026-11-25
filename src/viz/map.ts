@@ -829,7 +829,6 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
 
       d3.select(this)
         .text(lang === "en" ? d.name_en : d.name_zh)
-        .classed("visible", false)
         .classed("spotlight", d.id === spotlightId)
         .attr("text-anchor", "middle");
     });
@@ -886,7 +885,7 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
             : `等 ${omittedNames} 人 · 点击展开`,
         );
       }
-      const text = d3.select(this).classed("visible", false).attr("text-anchor", "middle");
+      const text = d3.select(this).attr("text-anchor", "middle");
       text
         .select<SVGTSpanElement>("tspan.cluster-title")
         .text(`${regionTitle(activeMembers, lang)} · ${count}`);
@@ -1154,6 +1153,10 @@ export async function initMap(rootEl: HTMLElement): Promise<void> {
         .attr("y2", (endY - currentTransform.y) / currentZoom)
         .attr("opacity", 0.62);
     }
+
+    const shownKeys = new Set(pendingLabels.map(({ candidate }) => candidate.key));
+    labels().classed("visible", (d) => shownKeys.has(`p:${d.id}`));
+    clusterLabels().classed("visible", (d) => shownKeys.has(`c:${d.key}`));
   }
 
   function applyState(): void {

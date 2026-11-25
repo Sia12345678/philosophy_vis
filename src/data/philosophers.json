@@ -1001,8 +1001,8 @@
       "location": {
         "zh": "临淄",
         "en": "Linzi",
-        "lat": 36.84,
-        "lng": 118.18
+        "lat": 36.88976,
+        "lng": 118.33791
       },
       "schools": [
         "confucianism"
@@ -1049,8 +1049,8 @@
       "location": {
         "zh": "新郑",
         "en": "Xinzheng",
-        "lat": 34.4,
-        "lng": 113.69
+        "lat": 34.41231,
+        "lng": 113.72227
       },
       "schools": [
         "legalism"
@@ -1579,8 +1579,8 @@
       "location": {
         "zh": "曹溪",
         "en": "Caoxi",
-        "lat": 24.78,
-        "lng": 113.5
+        "lat": 24.6491,
+        "lng": 113.6316
       },
       "schools": [
         "zen",
@@ -1852,8 +1852,8 @@
       "location": {
         "zh": "道州",
         "en": "Daozhou",
-        "lat": 25.52,
-        "lng": 111.61
+        "lat": 25.5295,
+        "lng": 111.5953
       },
       "schools": [
         "neo_confucianism"
@@ -1928,8 +1928,8 @@
       "location": {
         "zh": "横渠",
         "en": "Hengqu",
-        "lat": 34.52,
-        "lng": 107.67
+        "lat": 34.19708,
+        "lng": 107.95941
       },
       "schools": [
         "neo_confucianism"
@@ -2195,8 +2195,8 @@
       "location": {
         "zh": "武夷山",
         "en": "Wuyi Mountain",
-        "lat": 27.76,
-        "lng": 117.97
+        "lat": 27.64972,
+        "lng": 117.94278
       },
       "schools": [
         "neo_confucianism",
@@ -3554,8 +3554,8 @@
       "location": {
         "zh": "徽州",
         "en": "Huizhou",
-        "lat": 29.86,
-        "lng": 118.32
+        "lat": 29.71058,
+        "lng": 118.30091
       },
       "schools": [
         "neo_confucianism"
