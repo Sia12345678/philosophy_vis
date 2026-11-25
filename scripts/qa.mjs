@@ -1058,6 +1058,41 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
   });
   await loadApp(page, baseUrl);
   check("custom question: chooser starts open", await chooserIsOpen(page));
+  const legacyTrail = {
+    id: "custom-legacy-template",
+    title_zh: "旧版模板路线",
+    title_en: "Legacy template trail",
+    description_zh: "旧版本地模板",
+    description_en: "Legacy local template",
+    steps: [
+      "socrates",
+      "plato",
+      "aristotle",
+      "descartes",
+      "kant",
+      "hegel",
+      "nietzsche",
+    ].map((philosopherId) => ({
+      philosopherId,
+      theoryIndex: 0,
+      question_zh: "旧版问题？",
+      question_en: "A legacy question?",
+      bridge_zh: "旧版过渡",
+      bridge_en: "Legacy bridge",
+    })),
+  };
+  await page.evaluate((trail) => {
+    localStorage.setItem("philosophy_vis_custom_trail_v1", JSON.stringify(trail));
+  }, legacyTrail);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.locator("#map-root path.land").first().waitFor({ state: "visible" });
+  check(
+    "custom question: legacy local template is discarded",
+    (await page.evaluate(() => localStorage.getItem("philosophy_vis_custom_trail_v1"))) ===
+      null &&
+      (await page.locator("#trail-panel").isHidden()) &&
+      (await page.locator(".trail-route-card").count()) === 3,
+  );
   await page.locator("#trail-custom-question").fill("我为什么会害怕死亡？");
   await page.locator('.trail-ask-row button[type="submit"]').click();
   await page
@@ -1095,6 +1130,17 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
     "custom question: hash points at custom trail",
     /^#trail=custom-/.test(customHash),
     customHash,
+  );
+  const storedCustom = await page.evaluate(() => {
+    const raw = localStorage.getItem("philosophy_vis_custom_trail_v2");
+    return raw ? JSON.parse(raw) : null;
+  });
+  check(
+    "custom question: only model-generated routes are persisted",
+    storedCustom?.version === 2 &&
+      storedCustom?.generator === "model-v1" &&
+      storedCustom?.trail?.id === "custom-qa-model",
+    JSON.stringify(storedCustom),
   );
 
   await page.reload({ waitUntil: "domcontentloaded" });

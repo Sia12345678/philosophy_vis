@@ -120,6 +120,30 @@ function responseText(result: unknown): string {
   return "";
 }
 
+function plannerMessages(question: string): Array<{ role: string; content: string }> {
+  return [
+    { role: "system", content: systemPrompt },
+    {
+      role: "user",
+      content: `用户问题：${question}\n\n请规划一条 7 站路线。严格从目录中选择，并按你认为最有助于思考的顺序排列。`,
+    },
+  ];
+}
+
+async function runPlanner(
+  env: Env,
+  messages: Array<{ role: string; content: string }>,
+  temperature: number,
+): Promise<unknown> {
+  return env.AI!.run(env.TRAIL_MODEL || defaultModel, {
+    messages,
+    temperature,
+    max_tokens: 2400,
+    reasoning_effort: null,
+    chat_template_kwargs: { enable_thinking: false },
+  });
+}
+
 async function planTrail(
   request: Request,
   env: Env,
@@ -169,21 +193,10 @@ async function planTrail(
     );
   }
 
+  const messages = plannerMessages(question);
   let result: unknown;
   try {
-    result = await env.AI.run(env.TRAIL_MODEL || defaultModel, {
-      messages: [
-        { role: "system", content: systemPrompt },
-        {
-          role: "user",
-          content: `用户问题：${question}\n\n请规划一条 7 站路线。严格从目录中选择，并按你认为最有助于思考的顺序排列。`,
-        },
-      ],
-      temperature: 0.35,
-      max_tokens: 2400,
-      reasoning_effort: null,
-      chat_template_kwargs: { enable_thinking: false },
-    });
+    result = await runPlanner(env, messages, 0.35);
   } catch (error) {
     console.error("[plan-trail] model call failed", error);
     return json(
@@ -208,8 +221,54 @@ async function planTrail(
   try {
     const trail = buildTrailFromPlan(rawPlan, question, philosophers);
     return json({ trail }, 200, origin, env);
-  } catch (error) {
-    console.error("[plan-trail] invalid model plan", error, rawPlan.slice(0, 1200));
+  } catch (firstError) {
+    console.error(
+      "[plan-trail] first model plan invalid, requesting repair",
+      firstError,
+      rawPlan.slice(0, 1200),
+    );
+
+    const repairMessages = [
+      ...messages,
+      { role: "assistant", content: rawPlan.slice(0, 8000) },
+      {
+        role: "user",
+        content: `上一条路线未通过结构校验：${firstError instanceof Error ? firstError.message : "unknown error"}。
+
+请修复并重新输出完整 JSON。硬性要求：
+1. philosopherId 必须逐字复制目录中的 id，不能使用目录外的哲学家。
+2. theoryIndex 必须是该哲学家 theories 数组中真实存在的 i。
+3. 必须包含 6–8 位不同哲学家，每位只出现一次。
+4. 只输出修正后的 JSON，不要解释、Markdown 或代码围栏。`,
+      },
+    ];
+
+    let repairedResult: unknown;
+    try {
+      repairedResult = await runPlanner(env, repairMessages, 0.15);
+    } catch (repairCallError) {
+      console.error("[plan-trail] repair model call failed", repairCallError);
+      return json(
+        { error: "model_failed", message: "模型暂时无法规划路线，请稍后重试。" },
+        502,
+        origin,
+        env,
+      );
+    }
+
+    const repairedPlan = responseText(repairedResult);
+    try {
+      if (!repairedPlan) throw new Error("repair returned an empty response");
+      const trail = buildTrailFromPlan(repairedPlan, question, philosophers);
+      return json({ trail }, 200, origin, env);
+    } catch (repairError) {
+      console.error(
+        "[plan-trail] repaired model plan still invalid",
+        repairError,
+        repairedPlan.slice(0, 1200),
+      );
+    }
+
     return json(
       {
         error: "invalid_model_plan",
