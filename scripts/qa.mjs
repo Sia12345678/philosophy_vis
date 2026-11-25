@@ -1022,6 +1022,40 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
     width: 1440,
     height: 900,
   });
+  let plannerRequest = null;
+  await page.route("**/api/plan-trail", async (route) => {
+    plannerRequest = route.request().postDataJSON();
+    const question = plannerRequest?.question ?? "";
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        trail: {
+          id: "custom-qa-model",
+          title_zh: `关于「${question}」的模型路线`,
+          title_en: `A model trail: ${question}`,
+          description_zh: "测试路线",
+          description_en: "Test trail",
+          steps: [
+            "socrates",
+            "epicurus",
+            "seneca",
+            "heidegger",
+            "levinas",
+            "camus",
+            "beauvoir",
+          ].map((philosopherId) => ({
+            philosopherId,
+            theoryIndex: 0,
+            question_zh: `如果从${philosopherId}出发，这个问题会怎样改变？`,
+            question_en: `How would the question change from ${philosopherId}?`,
+            bridge_zh: "",
+            bridge_en: "",
+          })),
+        },
+      }),
+    });
+  });
   await loadApp(page, baseUrl);
   check("custom question: chooser starts open", await chooserIsOpen(page));
   await page.locator("#trail-custom-question").fill("我为什么会害怕死亡？");
@@ -1030,6 +1064,11 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
     .locator('#trail-panel[data-trail-id^="custom-"]')
     .waitFor({ state: "visible" });
   const customTitle = await page.locator("#trail-player-title").innerText();
+  check(
+    "custom question: model endpoint received the question",
+    plannerRequest?.question === "我为什么会害怕死亡？",
+    JSON.stringify(plannerRequest),
+  );
   check(
     "custom question: title contains the user question",
     customTitle.includes("我为什么会害怕死亡"),
@@ -1105,6 +1144,42 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
     errors.join(" | "),
   );
   await context.close();
+
+  const failure = await createPage(browser, origin, {
+    width: 390,
+    height: 844,
+  });
+  await failure.page.route("**/api/plan-trail", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ trail: {} }),
+    }),
+  );
+  await loadApp(failure.page, baseUrl);
+  await failure.page
+    .locator("#trail-custom-question")
+    .fill("一个完全不在预设主题里的问题");
+  await failure.page.locator('.trail-ask-row button[type="submit"]').click();
+  await failure.page
+    .locator("#trail-chooser .trail-status")
+    .filter({ hasText: "模型返回的路线不完整" })
+    .waitFor({ state: "visible" });
+  check(
+    "custom question: model failure does not open a fake route",
+    await failure.page.locator("#trail-panel").isHidden(),
+  );
+  check(
+    "custom question: model failure keeps the user question editable",
+    (await failure.page.locator("#trail-custom-question").inputValue()) ===
+      "一个完全不在预设主题里的问题",
+  );
+  check(
+    "custom question: model failure has no console or page errors",
+    failure.errors.length === 0,
+    failure.errors.join(" | "),
+  );
+  await failure.context.close();
 }
 
 async function runBasemapRetry(browser, baseUrl, origin) {

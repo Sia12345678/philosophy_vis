@@ -16,5 +16,5 @@
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["src", "worker", "vite.config.ts"]
 }

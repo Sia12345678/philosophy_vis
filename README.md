@@ -13,9 +13,10 @@
 - **缩放**:1×–8× 缩放 + 拖动平移,放大后点等比缩小避免遮挡
 - **响应式布局**:桌面、平板、手机与横屏均可使用,地图和标记会随容器尺寸重新排布
 - **问题式思想路线**:3 条中英双语路线(哲学是什么 / 哲学与社会 / 哲学与人生),每条 6–8 站;支持上一站/下一站、进度保存、继续阅读、重新开始和完成状态
-- **自定义提问**:在路线入口写下自己的问题,本地规划器会从现有哲学家中自动挑选 7 个概念切入点,按时间顺序生成一条可立即演示的路线;自定义路线只保存在本机
+- **自定义提问**:在路线入口写下自己的问题,由 Cloudflare Workers AI 从现有哲学家中选择 7 个真正相关的概念切入点,生成一条可立即行走的路线;规划失败会明确报错,不会用通用模板假装回答
 - **三套视觉风格**:默认「航海图」,可切换「夜航图」与「羊皮纸」;主题选择保存在本地
 - **本地优先与分享**:路线进度只存在浏览器本地,可导出/导入 JSON;`#trail=<id>&step=<n>` 可直接分享到某一站,并与录屏模式 `#record` 共存
+- **模型隐私边界**:自定义提问会把问题文本发送给本项目的 Cloudflare Worker 和 Workers AI 用于生成路线;不使用、也不索取用户的聊天 API key。自定义路线仅保存在本机
 - **可靠底图加载**:底图请求失败会自动重试,并保留已显示的旧地图;首次加载失败时可手动重试
 - **电影模式 (cinematic auto-play)**:自动播放时镜头沿 9 个航点平移(雅典→罗马→长安→巴格达→巴黎→哥尼斯堡→现代),顶部标题卡同步显示当下空间与说明
 - **与哲学家对话(BYOK)**:点开侧边卡片底部 ⚙ 填入您自己的 OpenAI / Anthropic / DeepSeek / 通义 Qwen / Moonshot Kimi / 智谱 GLM key,即可让大模型扮演该哲学家与您对谈。Key 仅存于本地浏览器,**项目不提供任何 key**,代码完全开源可审计。建议为试用 key 设置消费上限。
@@ -70,12 +71,20 @@ src/
     ├── eras.ts               # 时代判断 + 底图加载缓存
     ├── trailHash.ts          # 路线深链与 #record 兼容
     ├── trailProgress.ts      # 本地进度、导入导出
-    ├── trailPlanner.ts       # 自定义问题的本地路线规划
+    ├── modelTrail.ts         # 自定义问题的模型规划请求与结果校验
+    ├── modelTrailSchema.ts   # 模型提示词、结构化路线解析与校验
     ├── customTrail.ts        # 自定义路线本地快照
     ├── theme.ts              # 三套视觉主题切换
     └── i18n.ts
 public/basemaps/              # 7 张历史地图 GeoJSON
+worker/index.ts               # Cloudflare Worker: /api/plan-trail + Workers AI binding
 ```
+
+## 模型规划 · Model planning
+
+自定义问题通过 `POST /api/plan-trail` 交给 Cloudflare Workers AI。模型只负责选择哲学家、理论下标和每一步的问题;返回结果会在 Worker 和前端各校验一次,任何未知哲学家、非法理论下标、重复人物或不完整 JSON 都会被拒绝。模型不可用时不会偷偷退回本地模板。
+
+Cloudflare 部署需要启用 Workers AI binding(`wrangler.toml` 中的 `[ai] binding = "AI"`)。GitHub Pages 会调用 `wherephilosophygoes.ucfnshu.workers.dev`;Cloudflare 同源部署则直接调用 `/api/plan-trail`。
 
 ## 项目阶段 · Roadmap
 

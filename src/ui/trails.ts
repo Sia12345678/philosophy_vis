@@ -8,10 +8,10 @@ import {
   type TrailStep,
 } from "../data/trails";
 import { loadCustomTrail, saveCustomTrail } from "../utils/customTrail";
+import { ModelTrailError, requestModelTrail } from "../utils/modelTrail";
 import type { Philosopher } from "../utils/types";
 import { store } from "../utils/store";
 import { linkForTrail, parseAppHash, updateAppHash } from "../utils/trailHash";
-import { planCustomTrail } from "../utils/trailPlanner";
 import {
   clearStoredTrailProgress,
   defaultTrailProgress,
@@ -141,20 +141,28 @@ export function initTrails(): void {
     return language() === "en" ? p.name_en : p.name_zh;
   }
 
-  function setStatus(message: string): void {
+  function setStatus(message: string, options: { sticky?: boolean } = {}): void {
     statusMessage = message;
     live.textContent = message;
     const target = chooserOpen
       ? chooser.querySelector<HTMLElement>(".trail-status")
       : panel.querySelector<HTMLElement>(".trail-status");
-    if (target) target.textContent = message;
+    if (target) {
+      target.textContent = message;
+      target.classList.toggle("has-message", Boolean(message));
+    }
     if (statusTimer !== null) window.clearTimeout(statusTimer);
+    statusTimer = null;
+    if (options.sticky) return;
     statusTimer = window.setTimeout(() => {
       statusMessage = "";
       const node = (chooserOpen ? chooser : panel).querySelector<HTMLElement>(
         ".trail-status",
       );
-      if (node) node.textContent = "";
+      if (node) {
+        node.textContent = "";
+        node.classList.remove("has-message");
+      }
     }, 5000);
   }
 
@@ -246,6 +254,12 @@ export function initTrails(): void {
               )
               .join("")}
           </div>
+          <p class="trail-ask-note">${escapeHtml(
+            tr(
+              "由模型按你的问题选择 7 站，约需 10–20 秒。每次提问会调用一次模型。",
+              "A model plans seven stops from your question in about 10–20 seconds. Each request uses the model once.",
+            ),
+          )}</p>
         </form>
 
         ${
@@ -621,7 +635,21 @@ export function initTrails(): void {
     goToStep(trailId, step, { focus: true });
   }
 
-  function planFromQuestion(rawQuestion: string): void {
+  function setPlanning(busy: boolean): void {
+    const form = chooser.querySelector<HTMLFormElement>("#trail-ask-form");
+    const input = chooser.querySelector<HTMLInputElement>("#trail-custom-question");
+    const button = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+    form?.classList.toggle("is-planning", busy);
+    if (input) input.disabled = busy;
+    if (button) {
+      button.disabled = busy;
+      button.textContent = busy
+        ? tr("正在规划…", "Planning…")
+        : tr("规划路线", "Plan trail");
+    }
+  }
+
+  async function planFromQuestion(rawQuestion: string): Promise<void> {
     const question = rawQuestion.replace(/\s+/g, " ").trim();
     if (Array.from(question).length < 2) {
       setStatus(
@@ -635,20 +663,41 @@ export function initTrails(): void {
         ?.focus();
       return;
     }
+    if (chooser.querySelector("#trail-ask-form.is-planning")) return;
+    setPlanning(true);
+    setStatus(
+      tr(
+        "正在把你的问题交给模型规划路线…",
+        "The model is planning a route from your question…",
+      ),
+      { sticky: true },
+    );
     try {
-      const trail = planCustomTrail(question);
+      const trail = await requestModelTrail(question);
       saveCustomTrail(trail);
       registerTrail(trail);
       customTrailId = trail.id;
+      setPlanning(false);
+      setStatus("");
       startTrail(trail.id, 1);
     } catch (error) {
-      console.error("[trails] failed to plan custom trail", error);
+      if (error instanceof ModelTrailError) {
+        console.warn("[trails] model trail unavailable", error.status ?? "", error.message);
+      } else {
+        console.error("[trails] failed to plan model trail", error);
+      }
+      setPlanning(false);
       setStatus(
-        tr(
-          "这条问题暂时无法规划，请换一种问法。",
-          "That question could not be planned. Try rephrasing it.",
-        ),
+        error instanceof ModelTrailError
+          ? error.message
+          : tr(
+              "模型暂时没能完成这条路线，请重新提问。",
+              "The model could not finish this route. Please try again.",
+            ),
       );
+      chooser
+        .querySelector<HTMLInputElement>("#trail-custom-question")
+        ?.focus();
     }
   }
 
@@ -820,7 +869,7 @@ export function initTrails(): void {
         "#trail-custom-question",
       );
       if (input) input.value = question;
-      planFromQuestion(question);
+      void planFromQuestion(question);
     }
   });
 
@@ -828,7 +877,7 @@ export function initTrails(): void {
     const form = event.target as HTMLFormElement;
     if (form.id !== "trail-ask-form") return;
     event.preventDefault();
-    planFromQuestion(
+    void planFromQuestion(
       chooser.querySelector<HTMLInputElement>("#trail-custom-question")
         ?.value ?? "",
     );

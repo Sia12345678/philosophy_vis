@@ -949,6 +949,33 @@ body {
   color: var(--accent);
 }
 
+.trail-ask-note {
+  margin: 9px 0 0;
+  color: var(--ink-faint);
+  font-family: var(--serif-zh);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.trail-ask.is-planning {
+  border-color: rgb(var(--accent-rgb) / 0.5);
+  background: rgb(var(--accent-rgb) / 0.045);
+}
+
+.trail-ask.is-planning button {
+  cursor: wait;
+  animation: trail-planning-pulse 1.4s ease-in-out infinite;
+}
+
+.trail-ask input:disabled {
+  opacity: 0.72;
+}
+
+@keyframes trail-planning-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.58; }
+}
+
 .trail-resume {
   display: grid;
   grid-template-columns: 1fr auto;
