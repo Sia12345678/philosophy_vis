@@ -1,4 +1,5 @@
 import type { ProviderConfig } from "./providers";
+import { checkedBaseUrl } from "./baseUrl";
 import { redactSecrets } from "./redact";
 
 export interface ChatMessage {
@@ -105,7 +106,7 @@ async function postOrThrow(
 async function* streamOpenAICompat(
   opts: StreamChatOpts,
 ): AsyncGenerator<ChatChunk> {
-  const url = `${opts.baseUrl.replace(/\/$/, "")}/chat/completions`;
+  const url = `${checkedBaseUrl(opts.baseUrl)}/chat/completions`;
   const body = JSON.stringify({
     model: opts.model,
     stream: true,
@@ -150,7 +151,7 @@ async function* streamOpenAICompat(
 async function* streamAnthropic(
   opts: StreamChatOpts,
 ): AsyncGenerator<ChatChunk> {
-  const url = `${opts.baseUrl.replace(/\/$/, "")}/messages`;
+  const url = `${checkedBaseUrl(opts.baseUrl)}/messages`;
   const body = JSON.stringify({
     model: opts.model,
     stream: true,

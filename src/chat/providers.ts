@@ -167,11 +167,20 @@ function clearLegacySettings(): void {
 
 export function loadSettingsState(): LoadedSettings | null {
   const session = readStoredSettings(storageFor("session"));
-  if (session) return { settings: session, remember: false };
+  if (session) {
+    clearLegacySettings();
+    return { settings: session, remember: false };
+  }
   const local = readStoredSettings(storageFor("local"));
-  if (local) return { settings: local, remember: true };
+  if (local) {
+    clearLegacySettings();
+    return { settings: local, remember: true };
+  }
   const legacy = readLegacySettings();
-  if (!legacy) return null;
+  if (!legacy) {
+    clearLegacySettings();
+    return null;
+  }
   try {
     storageFor("session")?.setItem(
       SETTINGS_KEY,

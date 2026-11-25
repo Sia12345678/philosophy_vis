@@ -4,6 +4,7 @@ import {
   type ChatSettings,
   type LoadedSettings,
 } from "./providers";
+import { checkedBaseUrl } from "./baseUrl";
 
 export interface ProviderSettingsLabels {
   provider: string;
@@ -125,7 +126,7 @@ export function readProviderSettings(
   const provider = getProvider(providerId);
   if (!provider) return { error: "provider 配置无效，请重新选择。" };
   if (!apiKey) return { error: "请填写 API Key。" };
-  const baseUrl =
+  let baseUrl =
     provider.id === "custom"
       ? String(data.get("baseUrl") ?? "").trim()
       : provider.baseUrl;
@@ -133,6 +134,15 @@ export function readProviderSettings(
     String(data.get("model") ?? "").trim() || provider.defaultModel;
   if (!baseUrl || !model) {
     return { error: "自定义模式需要填写 Base URL 和模型名。" };
+  }
+  if (provider.id === "custom") {
+    try {
+      baseUrl = checkedBaseUrl(baseUrl);
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : "Base URL 配置无效。",
+      };
+    }
   }
   return {
     value: {

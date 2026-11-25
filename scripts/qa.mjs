@@ -1024,7 +1024,9 @@ async function runChatKeyRedaction(browser, baseUrl, origin) {
   });
   const apiKey = "sk-chat-leak-secret-9012";
   let authorization = "";
+  let providerRequests = 0;
   await page.route("**/test-chat/chat/completions", async (route) => {
+    providerRequests += 1;
     authorization = route.request().headers().authorization ?? "";
     await route.fulfill({
       status: 400,
@@ -1063,6 +1065,29 @@ async function runChatKeyRedaction(browser, baseUrl, origin) {
     "chat: redaction test has no unexpected page errors",
     errors.every((error) => error.includes("400")),
     errors.join(" | "),
+  );
+  await page.evaluate((key) => {
+    sessionStorage.setItem(
+      "philosophy_vis_llm_settings_v2",
+      JSON.stringify({
+        version: 2,
+        providerId: "custom",
+        apiKey: key,
+        baseUrl: "http://insecure.example.com/v1",
+        model: "test-model",
+      }),
+    );
+  }, apiKey);
+  await page.locator("#sidebar .chat-textarea").fill("测试明文传输拦截");
+  await page.locator("#sidebar .chat-send-btn").click();
+  await page
+    .locator("#sidebar .chat-error")
+    .filter({ hasText: "Base URL 必须使用 HTTPS" })
+    .waitFor({ state: "visible" });
+  check(
+    "chat: insecure custom Base URL is blocked before any request",
+    providerRequests === 1,
+    String(providerRequests),
   );
   await context.close();
 }
@@ -1183,6 +1208,18 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
   await page.locator('select[name="provider"]').selectOption("custom");
   await page.locator('input[name="apiKey"]').fill("sk-test-secret");
   await page.locator('input[name="model"]').fill("test-model");
+  await page.locator('input[name="baseUrl"]').fill("http://insecure.example.com/v1");
+  await page.locator('[data-settings-action="save"]').click();
+  await page
+    .locator("#trail-chooser .trail-status")
+    .filter({ hasText: "Base URL 必须使用 HTTPS" })
+    .waitFor({ state: "visible" });
+  check(
+    "custom question: insecure Base URL is rejected before storing the key",
+    (await page.evaluate(() =>
+      sessionStorage.getItem("philosophy_vis_llm_settings_v2"),
+    )) === null,
+  );
   await page.locator('input[name="baseUrl"]').fill(`${origin}/test-v1`);
   await page.locator('[data-settings-action="save"]').click();
   const storedKey = await page.evaluate(() => ({

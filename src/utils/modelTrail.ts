@@ -1,5 +1,6 @@
 import philosophersData from "../data/philosophers.json";
 import type { Trail } from "../data/trails";
+import { checkedBaseUrl } from "../chat/baseUrl";
 import { getProvider, loadSettings, type ChatSettings } from "../chat/providers";
 import { redactSecrets } from "../chat/redact";
 import {
@@ -45,26 +46,6 @@ function plannerSystemPrompt(): string {
     cachedSystemPrompt = buildPlannerSystemPrompt(philosophers);
   }
   return cachedSystemPrompt;
-}
-
-function checkedBaseUrl(raw: string): string {
-  let url: URL;
-  try {
-    url = new URL(raw);
-  } catch {
-    throw new ModelTrailError("Base URL 格式不正确。", "config");
-  }
-  const localHost =
-    url.hostname === "localhost" ||
-    url.hostname === "127.0.0.1" ||
-    url.hostname === "[::1]";
-  if (url.protocol !== "https:" && !(url.protocol === "http:" && localHost)) {
-    throw new ModelTrailError(
-      "为避免 API Key 以明文传输，Base URL 必须使用 HTTPS（本机 localhost 除外）。",
-      "config",
-    );
-  }
-  return url.toString().replace(/\/$/, "");
 }
 
 function classifyStatus(status: number): ModelTrailErrorKind {
@@ -161,7 +142,15 @@ async function requestCompletion(
   if (!provider) {
     throw new ModelTrailError("模型 provider 配置无效，请重新连接。", "settings");
   }
-  const baseUrl = checkedBaseUrl(settings.baseUrl);
+  let baseUrl: string;
+  try {
+    baseUrl = checkedBaseUrl(settings.baseUrl);
+  } catch (error) {
+    throw new ModelTrailError(
+      error instanceof Error ? error.message : "Base URL 配置无效。",
+      "config",
+    );
+  }
   const isAnthropic = provider.schema === "anthropic";
   const url = isAnthropic ? `${baseUrl}/messages` : `${baseUrl}/chat/completions`;
   const body = isAnthropic
