@@ -82,7 +82,7 @@ async function messageForResponse(response: Response): Promise<string> {
 
 export async function requestModelTrail(question: string): Promise<Trail> {
   const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 45_000);
+  const timeout = window.setTimeout(() => controller.abort(), 90_000);
   let response: Response;
   try {
     response = await fetch(plannerEndpoint(), {

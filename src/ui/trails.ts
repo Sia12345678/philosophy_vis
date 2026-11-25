@@ -256,8 +256,8 @@ export function initTrails(): void {
           </div>
           <p class="trail-ask-note">${escapeHtml(
             tr(
-              "由模型按你的问题选择 7 站，约需 10–20 秒。每次提问会调用一次模型。",
-              "A model plans seven stops from your question in about 10–20 seconds. Each request uses the model once.",
+              "由模型按你的问题选择 7 站，通常需要 20–60 秒。每次提问会调用一次模型。",
+              "A model plans seven stops from your question, usually in 20–60 seconds. Each request uses the model once.",
             ),
           )}</p>
         </form>
