@@ -1023,36 +1023,50 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
     height: 900,
   });
   let plannerRequest = null;
+  let plannerUrl = "";
+  let plannerHeaders = {};
+  let workerPlannerRequests = 0;
   await page.route("**/api/plan-trail", async (route) => {
-    plannerRequest = route.request().postDataJSON();
-    const question = plannerRequest?.question ?? "";
+    workerPlannerRequests += 1;
+    await route.abort();
+  });
+  await page.route("**/test-v1/chat/completions", async (route) => {
+    const request = route.request();
+    plannerUrl = request.url();
+    plannerHeaders = request.headers();
+    plannerRequest = request.postDataJSON();
+    const userMessage = [...(plannerRequest?.messages ?? [])]
+      .reverse()
+      .find((message) => message?.role === "user");
+    const question =
+      String(userMessage?.content ?? "").match(/用户问题：([\s\S]*?)\n\n/)?.[1] ?? "";
+    const plan = {
+      title_zh: `关于「${question}」的模型路线`,
+      title_en: `A model trail: ${question}`,
+      description_zh: "测试路线",
+      description_en: "Test trail",
+      steps: [
+        "socrates",
+        "epicurus",
+        "seneca",
+        "heidegger",
+        "levinas",
+        "camus",
+        "beauvoir",
+      ].map((philosopherId) => ({
+        philosopherId,
+        theoryIndex: 0,
+        question_zh: `如果从${philosopherId}出发，这个问题会怎样改变？`,
+        question_en: `How would the question change from ${philosopherId}?`,
+        bridge_zh: "",
+        bridge_en: "",
+      })),
+    };
     await route.fulfill({
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({
-        trail: {
-          id: "custom-qa-model",
-          title_zh: `关于「${question}」的模型路线`,
-          title_en: `A model trail: ${question}`,
-          description_zh: "测试路线",
-          description_en: "Test trail",
-          steps: [
-            "socrates",
-            "epicurus",
-            "seneca",
-            "heidegger",
-            "levinas",
-            "camus",
-            "beauvoir",
-          ].map((philosopherId) => ({
-            philosopherId,
-            theoryIndex: 0,
-            question_zh: `如果从${philosopherId}出发，这个问题会怎样改变？`,
-            question_en: `How would the question change from ${philosopherId}?`,
-            bridge_zh: "",
-            bridge_en: "",
-          })),
-        },
+        choices: [{ message: { content: JSON.stringify(plan) } }],
       }),
     });
   });
@@ -1093,6 +1107,45 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
       (await page.locator("#trail-panel").isHidden()) &&
       (await page.locator(".trail-route-card").count()) === 3,
   );
+  check(
+    "custom question: model connection form is available",
+    (await page.locator("details.trail-provider .provider-settings-form").count()) === 1,
+  );
+  await page.locator("#trail-custom-question").fill("没有连接模型时的问题");
+  await page.locator('.trail-ask-row button[type="submit"]').click();
+  await page
+    .locator("#trail-chooser .trail-status")
+    .filter({ hasText: "请先连接你自己的模型 API" })
+    .waitFor({ state: "visible" });
+  check(
+    "custom question: missing model settings never falls back to a project model",
+    plannerRequest === null &&
+      (await page.locator("#trail-panel").isHidden()) &&
+      (await page.locator("details.trail-provider").getAttribute("open")) !== null,
+  );
+  await page.locator('select[name="provider"]').selectOption("openai");
+  await page.locator('input[name="apiKey"]').fill("sk-should-not-cross-providers");
+  await page.locator('select[name="provider"]').selectOption("custom");
+  check(
+    "custom question: switching provider clears the previous API key",
+    (await page.locator('input[name="apiKey"]').inputValue()) === "",
+  );
+  await page.locator('select[name="provider"]').selectOption("custom");
+  await page.locator('input[name="apiKey"]').fill("sk-test-secret");
+  await page.locator('input[name="model"]').fill("test-model");
+  await page.locator('input[name="baseUrl"]').fill(`${origin}/test-v1`);
+  await page.locator('[data-settings-action="save"]').click();
+  const storedKey = await page.evaluate(() => ({
+    session: JSON.parse(
+      sessionStorage.getItem("philosophy_vis_llm_settings_v2") ?? "null",
+    ),
+    local: localStorage.getItem("philosophy_vis_llm_settings_v2"),
+  }));
+  check(
+    "custom question: key defaults to session storage, not localStorage",
+    storedKey.session?.apiKey === "sk-test-secret" && storedKey.local === null,
+    JSON.stringify(storedKey),
+  );
   await page.locator("#trail-custom-question").fill("我为什么会害怕死亡？");
   await page.locator('.trail-ask-row button[type="submit"]').click();
   await page
@@ -1100,9 +1153,25 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
     .waitFor({ state: "visible" });
   const customTitle = await page.locator("#trail-player-title").innerText();
   check(
-    "custom question: model endpoint received the question",
-    plannerRequest?.question === "我为什么会害怕死亡？",
+    "custom question: provider endpoint received the question",
+    String(
+      [...(plannerRequest?.messages ?? [])]
+        .reverse()
+        .find((message) => message?.role === "user")?.content ?? "",
+    ).includes("我为什么会害怕死亡"),
     JSON.stringify(plannerRequest),
+  );
+  check(
+    "custom question: browser calls provider directly, never the project Worker",
+    plannerUrl === `${origin}/test-v1/chat/completions` &&
+      workerPlannerRequests === 0,
+    JSON.stringify({ plannerUrl, workerPlannerRequests }),
+  );
+  check(
+    "custom question: key travels only in the Authorization header",
+    plannerHeaders.authorization === "Bearer sk-test-secret" &&
+      !plannerUrl.includes("sk-test-secret"),
+    JSON.stringify({ plannerUrl, headers: plannerHeaders }),
   );
   check(
     "custom question: title contains the user question",
@@ -1139,7 +1208,8 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
     "custom question: only model-generated routes are persisted",
     storedCustom?.version === 2 &&
       storedCustom?.generator === "model-v1" &&
-      storedCustom?.trail?.id === "custom-qa-model",
+      storedCustom?.trail?.id?.startsWith("custom-") &&
+      storedCustom?.trail?.steps?.length === 7,
     JSON.stringify(storedCustom),
   );
 
@@ -1195,11 +1265,23 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
     width: 390,
     height: 844,
   });
-  await failure.page.route("**/api/plan-trail", (route) =>
+  await failure.context.addInitScript((base) => {
+    sessionStorage.setItem(
+      "philosophy_vis_llm_settings_v2",
+      JSON.stringify({
+        version: 2,
+        providerId: "custom",
+        apiKey: "sk-failure",
+        baseUrl: `${base}/test-v1`,
+        model: "test-model",
+      }),
+    );
+  }, origin);
+  await failure.page.route("**/test-v1/chat/completions", (route) =>
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ trail: {} }),
+      body: JSON.stringify({ choices: [{ message: { content: "{}" } }] }),
     }),
   );
   await loadApp(failure.page, baseUrl);
@@ -1226,6 +1308,88 @@ async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
     failure.errors.join(" | "),
   );
   await failure.context.close();
+
+  const redaction = await createPage(browser, origin, {
+    width: 390,
+    height: 844,
+  });
+  await redaction.context.addInitScript((base) => {
+    if (!location.origin.startsWith("http")) return;
+    sessionStorage.setItem(
+      "philosophy_vis_llm_settings_v2",
+      JSON.stringify({
+        version: 2,
+        providerId: "custom",
+        apiKey: "sk-leaked-secret-1234",
+        baseUrl: `${base}/test-v1`,
+        model: "test-model",
+      }),
+    );
+  }, origin);
+  await redaction.page.route("**/test-v1/chat/completions", (route) =>
+    route.fulfill({
+      status: 401,
+      contentType: "application/json",
+      body: JSON.stringify({
+        error: {
+          message: "Incorrect API key provided: sk-leaked-secret-1234",
+        },
+      }),
+    }),
+  );
+  await loadApp(redaction.page, baseUrl);
+  await redaction.page
+    .locator("#trail-custom-question")
+    .fill("测试 API 错误脱敏");
+  await redaction.page.locator('.trail-ask-row button[type="submit"]').click();
+  const redactedStatus = redaction.page.locator("#trail-chooser .trail-status");
+  await redactedStatus.filter({ hasText: "API Key 无效" }).waitFor({ state: "visible" });
+  const redactedText = await redactedStatus.innerText();
+  check(
+    "custom question: provider errors never echo the API key",
+    !redactedText.includes("sk-leaked-secret-1234") &&
+      redactedText.includes("[redacted]"),
+    redactedText,
+  );
+  check(
+    "custom question: redaction test has no unexpected page errors",
+    redaction.errors.every((error) => error.includes("401")),
+    redaction.errors.join(" | "),
+  );
+  await redaction.context.close();
+
+  const legacy = await createPage(browser, origin, {
+    width: 390,
+    height: 844,
+  });
+  await legacy.context.addInitScript((base) => {
+    if (!location.origin.startsWith("http")) return;
+    localStorage.setItem("philosophy_vis_llm_provider", "custom");
+    localStorage.setItem("philosophy_vis_llm_key", "sk-legacy-secret-5678");
+    localStorage.setItem("philosophy_vis_llm_base_url", `${base}/test-v1`);
+    localStorage.setItem("philosophy_vis_llm_model", "legacy-model");
+  }, origin);
+  await loadApp(legacy.page, baseUrl);
+  const migrated = await legacy.page.evaluate(() => ({
+    session: JSON.parse(
+      sessionStorage.getItem("philosophy_vis_llm_settings_v2") ?? "null",
+    ),
+    legacyKey: localStorage.getItem("philosophy_vis_llm_key"),
+    legacyProvider: localStorage.getItem("philosophy_vis_llm_provider"),
+  }));
+  check(
+    "custom question: legacy localStorage key migrates to session and is erased",
+    migrated.session?.apiKey === "sk-legacy-secret-5678" &&
+      migrated.legacyKey === null &&
+      migrated.legacyProvider === null,
+    JSON.stringify(migrated),
+  );
+  check(
+    "custom question: legacy migration has no console or page errors",
+    legacy.errors.length === 0,
+    legacy.errors.join(" | "),
+  );
+  await legacy.context.close();
 }
 
 async function runBasemapRetry(browser, baseUrl, origin) {

@@ -13,32 +13,21 @@ export type PlannerPhilosopher = Pick<
   | "theories_en"
 >;
 
-interface PlannerCatalogEntry {
-  id: string;
-  zh: string;
-  en: string;
-  years: string;
-  schools: string[];
-  theories: Array<{ i: number; zh: string; en: string }>;
-}
+type PlannerCatalogEntry = [string, string, string, string, string, string];
 
 function formatYear(year: number): string {
   return year < 0 ? `${Math.abs(year)} BCE` : `${year} CE`;
 }
 
 function compactCatalog(philosophers: PlannerPhilosopher[]): PlannerCatalogEntry[] {
-  return philosophers.map((philosopher) => ({
-    id: philosopher.id,
-    zh: philosopher.name_zh,
-    en: philosopher.name_en,
-    years: `${formatYear(philosopher.birth)}–${formatYear(philosopher.death)}`,
-    schools: philosopher.schools,
-    theories: philosopher.theories_zh.map((theoryZh, index) => ({
-      i: index,
-      zh: theoryZh,
-      en: philosopher.theories_en[index] ?? "",
-    })),
-  }));
+  return philosophers.map((philosopher) => [
+    philosopher.id,
+    philosopher.name_zh,
+    philosopher.name_en,
+    `${formatYear(philosopher.birth)}–${formatYear(philosopher.death)}`,
+    philosopher.schools.join("/"),
+    philosopher.theories_zh.map((theory, index) => `${index}:${theory}`).join("|"),
+  ]);
 }
 
 export function buildPlannerSystemPrompt(
@@ -56,7 +45,9 @@ export function buildPlannerSystemPrompt(
 7. 只输出合法 JSON，不要 Markdown、代码围栏、解释或前后缀。JSON 结构必须是：
 {"title_zh":"...","title_en":"...","description_zh":"...","description_en":"...","steps":[{"philosopherId":"...","theoryIndex":0,"question_zh":"...","question_en":"..."}]}
 
-哲学家目录（JSON）：
+哲学家目录是 JSON 数组。每条格式为 [id, 中文名, 英文名, 生卒, 流派, 理论列表]。
+理论列表中的每一项形如「下标:理论名」，理论之间用 | 分隔；theoryIndex 只能取这些下标。
+
 ${JSON.stringify(compactCatalog(philosophers))}`;
 }
 

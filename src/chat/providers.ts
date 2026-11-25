@@ -83,6 +83,7 @@ const LS_PROVIDER = "philosophy_vis_llm_provider";
 const LS_KEY = "philosophy_vis_llm_key";
 const LS_BASE_URL = "philosophy_vis_llm_base_url";
 const LS_MODEL = "philosophy_vis_llm_model";
+const SETTINGS_KEY = "philosophy_vis_llm_settings_v2";
 
 export interface ChatSettings {
   providerId: string;
@@ -91,28 +92,126 @@ export interface ChatSettings {
   model: string;
 }
 
-export function loadSettings(): ChatSettings | null {
-  const providerId = localStorage.getItem(LS_PROVIDER);
-  const apiKey = localStorage.getItem(LS_KEY);
-  if (!providerId || !apiKey) return null;
-  const provider = getProvider(providerId);
-  if (!provider) return null;
-  const baseUrl = localStorage.getItem(LS_BASE_URL) || provider.baseUrl;
-  const model = localStorage.getItem(LS_MODEL) || provider.defaultModel;
-  if (!baseUrl || !model) return null;
-  return { providerId, apiKey, baseUrl, model };
+export interface LoadedSettings {
+  settings: ChatSettings;
+  remember: boolean;
 }
 
-export function saveSettings(s: ChatSettings): void {
-  localStorage.setItem(LS_PROVIDER, s.providerId);
-  localStorage.setItem(LS_KEY, s.apiKey);
-  localStorage.setItem(LS_BASE_URL, s.baseUrl);
-  localStorage.setItem(LS_MODEL, s.model);
+interface StoredSettings extends ChatSettings {
+  version: 2;
+}
+
+function normalizeSettings(value: unknown): ChatSettings | null {
+  if (!value || typeof value !== "object") return null;
+  const raw = value as Partial<StoredSettings>;
+  if (typeof raw.providerId !== "string" || typeof raw.apiKey !== "string") {
+    return null;
+  }
+  const apiKey = raw.apiKey.trim();
+  const provider = getProvider(raw.providerId);
+  if (!provider || !apiKey) return null;
+  const baseUrl =
+    typeof raw.baseUrl === "string" && raw.baseUrl.trim()
+      ? raw.baseUrl.trim()
+      : provider.baseUrl;
+  const model =
+    typeof raw.model === "string" && raw.model.trim()
+      ? raw.model.trim()
+      : provider.defaultModel;
+  if (!baseUrl || !model) return null;
+  return { providerId: provider.id, apiKey, baseUrl, model };
+}
+
+function storageFor(kind: "session" | "local"): Storage | null {
+  try {
+    return kind === "session" ? sessionStorage : localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function readStoredSettings(storage: Storage | null): ChatSettings | null {
+  if (!storage) return null;
+  try {
+    const raw = storage.getItem(SETTINGS_KEY);
+    if (!raw) return null;
+    return normalizeSettings(JSON.parse(raw));
+  } catch {
+    return null;
+  }
+}
+
+function readLegacySettings(): ChatSettings | null {
+  try {
+    return normalizeSettings({
+      providerId: localStorage.getItem(LS_PROVIDER),
+      apiKey: localStorage.getItem(LS_KEY),
+      baseUrl: localStorage.getItem(LS_BASE_URL),
+      model: localStorage.getItem(LS_MODEL),
+    });
+  } catch {
+    return null;
+  }
+}
+
+function clearLegacySettings(): void {
+  try {
+    localStorage.removeItem(LS_PROVIDER);
+    localStorage.removeItem(LS_KEY);
+    localStorage.removeItem(LS_BASE_URL);
+    localStorage.removeItem(LS_MODEL);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function loadSettingsState(): LoadedSettings | null {
+  const session = readStoredSettings(storageFor("session"));
+  if (session) return { settings: session, remember: false };
+  const local = readStoredSettings(storageFor("local"));
+  if (local) return { settings: local, remember: true };
+  const legacy = readLegacySettings();
+  if (!legacy) return null;
+  try {
+    storageFor("session")?.setItem(
+      SETTINGS_KEY,
+      JSON.stringify({ version: 2, ...legacy } satisfies StoredSettings),
+    );
+  } catch {
+    /* The key stays in memory for this page; never keep the old long-lived copy. */
+  }
+  clearLegacySettings();
+  return { settings: legacy, remember: false };
+}
+
+export function loadSettings(): ChatSettings | null {
+  return loadSettingsState()?.settings ?? null;
+}
+
+export function saveSettings(s: ChatSettings, remember = false): void {
+  const payload = JSON.stringify({ version: 2, ...s } satisfies StoredSettings);
+  const session = storageFor("session");
+  const local = storageFor("local");
+  try {
+    if (remember && local) {
+      local.setItem(SETTINGS_KEY, payload);
+      session?.removeItem(SETTINGS_KEY);
+    } else if (session) {
+      session.setItem(SETTINGS_KEY, payload);
+      local?.removeItem(SETTINGS_KEY);
+    }
+  } catch {
+    /* Storage can be unavailable in private or restricted contexts. */
+  }
+  clearLegacySettings();
 }
 
 export function clearSettings(): void {
-  localStorage.removeItem(LS_PROVIDER);
-  localStorage.removeItem(LS_KEY);
-  localStorage.removeItem(LS_BASE_URL);
-  localStorage.removeItem(LS_MODEL);
+  try {
+    storageFor("session")?.removeItem(SETTINGS_KEY);
+    storageFor("local")?.removeItem(SETTINGS_KEY);
+  } catch {
+    /* ignore */
+  }
+  clearLegacySettings();
 }

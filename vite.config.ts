@@ -7,12 +7,6 @@ export default defineConfig({
     port: 5188,
     strictPort: true,
     open: false,
-    proxy: {
-      "/api": {
-        target: "https://wherephilosophygoes.ucfnshu.workers.dev",
-        changeOrigin: true,
-      },
-    },
   },
   build: {
     outDir: "dist",

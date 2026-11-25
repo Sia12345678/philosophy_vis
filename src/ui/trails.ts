@@ -9,6 +9,17 @@ import {
 } from "../data/trails";
 import { loadCustomTrail, saveCustomTrail } from "../utils/customTrail";
 import { ModelTrailError, requestModelTrail } from "../utils/modelTrail";
+import {
+  clearSettings,
+  getProvider,
+  loadSettingsState,
+  saveSettings,
+} from "../chat/providers";
+import {
+  readProviderSettings,
+  renderProviderSettingsForm,
+  syncProviderFields,
+} from "../chat/settingsUi";
 import type { Philosopher } from "../utils/types";
 import { store } from "../utils/store";
 import { linkForTrail, parseAppHash, updateAppHash } from "../utils/trailHash";
@@ -212,6 +223,11 @@ export function initTrails(): void {
             `Continue “${resume.title_en}” · step ${progress.currentStep} / ${resume.steps.length} · ${resumePhilosopher.name_en}`,
           )
         : "";
+    const providerState = loadSettingsState();
+    const provider = providerState ? getProvider(providerState.settings.providerId) : null;
+    const providerSummary = providerState
+      ? `${provider?.label ?? providerState.settings.providerId} · ${providerState.settings.model}`
+      : tr("未连接", "Not connected");
 
     return `
       <div class="trail-chooser-backdrop" data-action="dismiss"></div>
@@ -256,11 +272,38 @@ export function initTrails(): void {
           </div>
           <p class="trail-ask-note">${escapeHtml(
             tr(
-              "由模型按你的问题选择 7 站，通常需要 20–60 秒。每次提问会调用一次模型。",
-              "A model plans seven stops from your question, usually in 20–60 seconds. Each request uses the model once.",
+              "由你自己的模型按问题选择 6–8 站，通常需要 20–60 秒；消耗你的 API 配额。",
+              "Your own model plans 6–8 stops from your question, usually in 20–60 seconds, using your API quota.",
             ),
           )}</p>
         </form>
+
+        <details class="trail-provider"${providerState ? "" : " open"}>
+          <summary>
+            <span class="trail-provider-summary">
+              <strong>${escapeHtml(tr("我的模型", "My model"))}</strong>
+              <span class="trail-provider-state${providerState ? " is-connected" : ""}">${escapeHtml(providerSummary)}</span>
+            </span>
+            <span class="trail-provider-toggle">${escapeHtml(tr("设置", "Settings"))}</span>
+          </summary>
+          <div class="trail-provider-panel">
+            ${renderProviderSettingsForm(providerState, {
+              provider: tr("服务商", "Provider"),
+              apiKey: "API Key",
+              model: tr("模型名", "Model"),
+              baseUrl: "Base URL",
+              remember: tr("在此浏览器记住 Key", "Remember this key in this browser"),
+              save: tr("保存", "Save"),
+              clear: tr("清除", "Clear"),
+            })}
+            <p class="trail-provider-note">${escapeHtml(
+              tr(
+                "Key 默认只保留在当前标签页的 sessionStorage；勾选“记住”后才写入 localStorage。规划请求由浏览器直连你的模型服务商，不经过本项目的服务器。切换 Provider 会清空当前 Key，避免误发给其他服务商。建议使用设置了消费上限的专用 Key。",
+                "The key stays in this tab's sessionStorage by default; it is written to localStorage only if you choose Remember. Planning requests go directly from your browser to your provider, never through this project's server. Switching providers clears the current key so it cannot be sent to the wrong service. Use a scoped key with a spending limit.",
+              ),
+            )}</p>
+          </div>
+        </details>
 
         ${
           resume
@@ -649,6 +692,50 @@ export function initTrails(): void {
     }
   }
 
+  function openProviderSettings(focusKey = false): void {
+    const details = chooser.querySelector<HTMLDetailsElement>("details.trail-provider");
+    if (!details) return;
+    details.open = true;
+    if (focusKey) {
+      details.querySelector<HTMLInputElement>('input[name="apiKey"]')?.focus();
+    }
+    details.scrollIntoView({ block: "nearest" });
+  }
+
+  function updateProviderSummary(): void {
+    const state = loadSettingsState();
+    const provider = state ? getProvider(state.settings.providerId) : null;
+    const summary = chooser.querySelector<HTMLElement>(".trail-provider-state");
+    if (!summary) return;
+    summary.textContent = state
+      ? `${provider?.label ?? state.settings.providerId} · ${state.settings.model}`
+      : tr("未连接", "Not connected");
+    summary.classList.toggle("is-connected", Boolean(state));
+  }
+
+  function saveProviderFromForm(form: HTMLFormElement): void {
+    const parsed = readProviderSettings(form);
+    if ("error" in parsed) {
+      setStatus(parsed.error);
+      return;
+    }
+    saveSettings(parsed.value.settings, parsed.value.remember);
+    updateProviderSummary();
+    form.closest("details")?.removeAttribute("open");
+    setStatus(tr("已连接你的模型。", "Your model is connected."));
+  }
+
+  function clearProviderFromForm(form: HTMLFormElement): void {
+    clearSettings();
+    form.reset();
+    const keyInput = form.querySelector<HTMLInputElement>('input[name="apiKey"]');
+    if (keyInput) keyInput.value = "";
+    syncProviderFields(form);
+    updateProviderSummary();
+    openProviderSettings();
+    setStatus(tr("已清除本机保存的模型配置。", "Local model settings cleared."));
+  }
+
   async function planFromQuestion(rawQuestion: string): Promise<void> {
     const question = rawQuestion.replace(/\s+/g, " ").trim();
     if (Array.from(question).length < 2) {
@@ -664,6 +751,16 @@ export function initTrails(): void {
       return;
     }
     if (chooser.querySelector("#trail-ask-form.is-planning")) return;
+    if (!loadSettingsState()) {
+      openProviderSettings(true);
+      setStatus(
+        tr(
+          "请先连接你自己的模型 API，再规划路线。",
+          "Connect your own model API before planning a trail.",
+        ),
+      );
+      return;
+    }
     setPlanning(true);
     setStatus(
       tr(
@@ -695,6 +792,9 @@ export function initTrails(): void {
               "The model could not finish this route. Please try again.",
             ),
       );
+      if (error instanceof ModelTrailError && error.kind === "settings") {
+        openProviderSettings(true);
+      }
       chooser
         .querySelector<HTMLInputElement>("#trail-custom-question")
         ?.focus();
@@ -851,6 +951,17 @@ export function initTrails(): void {
 
   chooser.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
+    const settingsAction = target.closest<HTMLElement>("[data-settings-action]");
+    if (settingsAction) {
+      const form = settingsAction.closest("form");
+      if (form instanceof HTMLFormElement) {
+        if (settingsAction.dataset.settingsAction === "save") saveProviderFromForm(form);
+        else if (settingsAction.dataset.settingsAction === "clear") {
+          clearProviderFromForm(form);
+        }
+      }
+      return;
+    }
     const actionEl = target.closest<HTMLElement>("[data-action]");
     if (!actionEl) return;
     const action = actionEl.dataset.action;
@@ -884,6 +995,14 @@ export function initTrails(): void {
   });
 
   chooser.addEventListener("change", (event) => {
+    const providerSelect = (event.target as HTMLElement).closest<HTMLSelectElement>(
+      'select[name="provider"]',
+    );
+    if (providerSelect) {
+      const form = providerSelect.closest("form");
+      if (form instanceof HTMLFormElement) syncProviderFields(form);
+      return;
+    }
     const input = event.target as HTMLInputElement;
     if (input.id !== "trail-import-file") return;
     const file = input.files?.[0];
