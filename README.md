@@ -82,7 +82,7 @@ worker/index.ts               # Cloudflare Worker: /api/plan-trail + Workers AI 
 
 ## 模型规划 · Model planning
 
-自定义问题通过 `POST /api/plan-trail` 交给 Cloudflare Workers AI。模型只负责选择哲学家、理论下标和每一步的问题;返回结果会在 Worker 和前端各校验一次,任何未知哲学家、非法理论下标、重复人物或不完整 JSON 都会被拒绝。模型不可用时不会偷偷退回本地模板。完整规划通常需要 20–60 秒。
+自定义问题通过 `POST /api/plan-trail` 交给 Cloudflare Workers AI。模型只负责选择哲学家、理论下标和每一步的问题;返回结果会在 Worker 和前端各校验一次。未知哲学家、非法理论下标或不完整 JSON 会被拒绝;重复人物会自动合并。若首次输出结构不合规,Worker 会带着具体错误让模型重排一次。模型不可用时不会偷偷退回本地模板。完整规划通常需要 20–60 秒。
 
 Cloudflare 部署需要启用 Workers AI binding(`wrangler.toml` 中的 `[ai] binding = "AI"`)。GitHub Pages 会调用 `wherephilosophygoes.ucfnshu.workers.dev`;Cloudflare 同源部署则直接调用 `/api/plan-trail`。
 
