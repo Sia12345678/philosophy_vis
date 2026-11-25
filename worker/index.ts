@@ -182,6 +182,8 @@ async function planTrail(
       ],
       temperature: 0.35,
       max_tokens: 2400,
+      reasoning_effort: null,
+      chat_template_kwargs: { enable_thinking: false },
     });
   } catch (error) {
     console.error("[plan-trail] model call failed", error);
