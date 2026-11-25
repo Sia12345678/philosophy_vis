@@ -257,11 +257,14 @@ async function planTrail(
     }
 
     const repairedPlan = responseText(repairedResult);
+    let repairFailure = "";
     try {
       if (!repairedPlan) throw new Error("repair returned an empty response");
       const trail = buildTrailFromPlan(repairedPlan, question, philosophers);
       return json({ trail }, 200, origin, env);
     } catch (repairError) {
+      repairFailure =
+        repairError instanceof Error ? repairError.message : String(repairError);
       console.error(
         "[plan-trail] repaired model plan still invalid",
         repairError,
@@ -273,6 +276,7 @@ async function planTrail(
       {
         error: "invalid_model_plan",
         message: "模型返回的路线不完整，请重新提问。",
+        detail: repairFailure.slice(0, 300),
       },
       502,
       origin,
