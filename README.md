@@ -12,6 +12,10 @@
 - **流派筛选 + 双语搜索**:30 个流派分组,中英文人名都可搜
 - **缩放**:1×–8× 缩放 + 拖动平移,放大后点等比缩小避免遮挡
 - **响应式布局**:桌面、平板、手机与横屏均可使用,地图和标记会随容器尺寸重新排布
+- **问题式思想路线**:3 条中英双语路线(哲学是什么 / 哲学与社会 / 哲学与人生),每条 6–8 站;支持上一站/下一站、进度保存、继续阅读、重新开始和完成状态
+- **自定义提问**:在路线入口写下自己的问题,本地规划器会从现有哲学家中自动挑选 7 个概念切入点,按时间顺序生成一条可立即演示的路线;自定义路线只保存在本机
+- **三套视觉风格**:默认「航海图」,可切换「夜航图」与「羊皮纸」;主题选择保存在本地
+- **本地优先与分享**:路线进度只存在浏览器本地,可导出/导入 JSON;`#trail=<id>&step=<n>` 可直接分享到某一站,并与录屏模式 `#record` 共存
 - **可靠底图加载**:底图请求失败会自动重试,并保留已显示的旧地图;首次加载失败时可手动重试
 - **电影模式 (cinematic auto-play)**:自动播放时镜头沿 9 个航点平移(雅典→罗马→长安→巴格达→巴黎→哥尼斯堡→现代),顶部标题卡同步显示当下空间与说明
 - **与哲学家对话(BYOK)**:点开侧边卡片底部 ⚙ 填入您自己的 OpenAI / Anthropic / DeepSeek / 通义 Qwen / Moonshot Kimi / 智谱 GLM key,即可让大模型扮演该哲学家与您对谈。Key 仅存于本地浏览器,**项目不提供任何 key**,代码完全开源可审计。建议为试用 key 设置消费上限。
@@ -32,6 +36,7 @@ Vite + TypeScript + D3.js · 原生 DOM,无框架 · `vite build` 产出纯静�
 npm install
 npm run dev      # → http://127.0.0.1:5188
 npm run build    # → dist/ (纯静态,可直接部署)
+npm run qa       # 构建并用 Playwright 跑路线、深链、响应式与无障碍回归
 npm run preview
 ```
 
@@ -41,6 +46,7 @@ npm run preview
 - `src/data/schools.json` — 30 个流派配色 + 元数据
 - `src/data/eras.json` — 7 个历史时代切片
 - `src/data/waypoints.json` — 9 个电影模式镜头航点
+- `src/data/trails.json` — 3 条问题式思想路线,共 23 站
 
 ## 文件结构 · Layout
 
@@ -57,10 +63,16 @@ src/
 │   └── sidebar.ts
 ├── ui/
 │   ├── filterBar.ts          # 流派下拉 + 搜索
-│   └── cinematicCaption.ts   # 顶部电影感标题卡
+│   ├── cinematicCaption.ts   # 顶部电影感标题卡
+│   └── trails.ts             # 路线入口、自定义提问、播放器与地图联动
 └── utils/
     ├── store.ts              # 自实现 pub-sub
     ├── eras.ts               # 时代判断 + 底图加载缓存
+    ├── trailHash.ts          # 路线深链与 #record 兼容
+    ├── trailProgress.ts      # 本地进度、导入导出
+    ├── trailPlanner.ts       # 自定义问题的本地路线规划
+    ├── customTrail.ts        # 自定义路线本地快照
+    ├── theme.ts              # 三套视觉主题切换
     └── i18n.ts
 public/basemaps/              # 7 张历史地图 GeoJSON
 ```

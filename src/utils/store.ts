@@ -3,6 +3,7 @@ type Listener<T> = (state: T, prev: T) => void;
 export interface AppState {
   year: number;
   selectedId: string | null;
+  spotlightId: string | null;
   hoveredId: string | null;
   showLineage: boolean;
   showAllPhilosophers: boolean;
@@ -18,6 +19,7 @@ export interface AppState {
 const initial: AppState = {
   year: -400,
   selectedId: null,
+  spotlightId: null,
   hoveredId: null,
   showLineage: false,
   showAllPhilosophers: false,

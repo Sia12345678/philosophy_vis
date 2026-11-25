@@ -5,6 +5,9 @@ node_modules/
 dist/
 *.tsbuildinfo
 
+# Local QA artifacts
+qa/
+
 # Editor / IDE
 .vscode/
 .idea/

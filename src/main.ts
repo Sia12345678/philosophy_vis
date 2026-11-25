@@ -6,7 +6,10 @@ import { initSidebar } from "./viz/sidebar";
 import { initLineage } from "./viz/lineage";
 import { initFilterBar } from "./ui/filterBar";
 import { initCinematicCaption } from "./ui/cinematicCaption";
+import { initTrails } from "./ui/trails";
+import { initTheme } from "./utils/theme";
 import { store } from "./utils/store";
+import { parseAppHash, updateAppHash } from "./utils/trailHash";
 import philosophersData from "./data/philosophers.json";
 import type { Philosopher } from "./utils/types";
 
@@ -33,6 +36,7 @@ function findBestMatch(q: string): Philosopher | null {
 }
 
 async function bootstrap(): Promise<void> {
+  initTheme();
   const mapRoot = document.getElementById("map-root");
   if (!mapRoot) {
     console.error("[main] no #map-root");
@@ -52,6 +56,9 @@ async function bootstrap(): Promise<void> {
   if (search) {
     search.addEventListener("input", () => {
       store.set({ searchQuery: search.value });
+    });
+    store.subscribe((s) => {
+      if (search.value !== s.searchQuery) search.value = s.searchQuery;
     });
     // Enter → locate top-matching philosopher: select + jump year + zoom camera
     search.addEventListener("keydown", (e) => {
@@ -173,14 +180,18 @@ async function bootstrap(): Promise<void> {
     return `${y} CE`;
   }
   function applyRecordMode(): void {
-    const isRecord = window.location.hash === "#record";
+    const isRecord = parseAppHash().record;
     document.body.classList.toggle("record-mode", isRecord);
     if (isRecord) {
       // Push current year onto stage data-year, keep updating
       if (stageEl) stageEl.setAttribute("data-year", fmtYear(store.get("year")));
       // Auto-start cinematic after layout settles
       window.setTimeout(() => {
-        if (!store.get("isPlaying")) {
+        if (
+          !parseAppHash().trailId &&
+          !document.body.classList.contains("trail-player-open") &&
+          !store.get("isPlaying")
+        ) {
           (document.getElementById("play") as HTMLButtonElement | null)?.click();
         }
       }, 600);
@@ -193,8 +204,8 @@ async function bootstrap(): Promise<void> {
   });
   window.addEventListener("hashchange", applyRecordMode);
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && window.location.hash === "#record") {
-      history.replaceState(null, "", window.location.pathname);
+    if (e.key === "Escape" && parseAppHash().record) {
+      updateAppHash({ record: false });
       applyRecordMode();
       // Stop playback so user is back to interactive state
       if (store.get("isPlaying")) {
@@ -203,6 +214,7 @@ async function bootstrap(): Promise<void> {
     }
   });
   applyRecordMode();
+  initTrails();
 }
 
 bootstrap();

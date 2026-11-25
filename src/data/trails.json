@@ -1,0 +1,234 @@
+{
+  "trails": [
+    {
+      "id": "what-is-philosophy",
+      "title_zh": "哲学是什么？",
+      "title_en": "What is philosophy?",
+      "description_zh": "从自然解释、自我审视与知识边界出发，走到语言如何塑造问题。",
+      "description_en": "From natural explanation and self-examination to the limits of knowledge and the work of language.",
+      "steps": [
+        {
+          "philosopherId": "thales",
+          "theoryIndex": 1,
+          "question_zh": "世界为什么这样，而不是别样？如果答案不再交给神话，我们还能依靠什么？",
+          "question_en": "Why is the world the way it is? If myth is no longer the answer, what can we rely on?",
+          "bridge_zh": "泰勒斯把解释的起点放在自然本身。接下来的问题不再是“世界由什么构成”，而是“人该如何生活”。",
+          "bridge_en": "Thales begins with nature itself. The next question is no longer what the world is made of, but how a person should live."
+        },
+        {
+          "philosopherId": "socrates",
+          "theoryIndex": 1,
+          "question_zh": "如果一个人从不检查自己的信念，他真的知道自己为什么这样活吗？",
+          "question_en": "If someone never examines their beliefs, do they really know why they live as they do?",
+          "bridge_zh": "苏格拉底把“认识世界”变成“认识自己”。但若定义总在追问中摇晃，我们能否找到稳定的知识对象？",
+          "bridge_en": "Socrates turns the inquiry from the world toward the self. But if definitions keep shifting under questioning, can knowledge find a stable object?"
+        },
+        {
+          "philosopherId": "plato",
+          "theoryIndex": 0,
+          "workIndex": 0,
+          "question_zh": "变化的事物背后，是否存在某种不变的结构？",
+          "question_en": "Behind things that change, is there some structure that does not change?",
+          "bridge_zh": "柏拉图把答案放到理念世界。亚里士多德拒绝把真实推到此岸之外，他要解释具体事物为何成为它自己。",
+          "bridge_en": "Plato places the answer in the world of Forms. Aristotle refuses to exile reality beyond this world and asks why a particular thing becomes what it is."
+        },
+        {
+          "philosopherId": "aristotle",
+          "theoryIndex": 0,
+          "workIndex": 0,
+          "question_zh": "一件事物之所以成为它自己，需要哪些原因？",
+          "question_en": "What kinds of causes make a thing the particular thing it is?",
+          "bridge_zh": "亚里士多德把知识安放在经验世界。两千年后，笛卡尔却要先拆掉所有可疑的信念，看看还剩下什么。",
+          "bridge_en": "Aristotle grounds knowledge in the experienced world. Two millennia later, Descartes will dismantle every doubtful belief to see what remains."
+        },
+        {
+          "philosopherId": "descartes",
+          "theoryIndex": 2,
+          "workIndex": 0,
+          "question_zh": "如果把一切可能出错的认识都悬置，最后还能确定什么？",
+          "question_en": "If every belief that could be wrong is suspended, what remains certain?",
+          "bridge_zh": "笛卡尔在“我思”中找到了不可怀疑的起点。但知识不能只从我思出发，它还需要说明经验如何被组织。",
+          "bridge_en": "Descartes finds an indubitable starting point in the thinking self. Yet knowledge cannot begin from that self alone; it must explain how experience is organized."
+        },
+        {
+          "philosopherId": "kant",
+          "theoryIndex": 0,
+          "workIndex": 0,
+          "question_zh": "经验被动地来到我们面前，为什么还能形成普遍必然的知识？",
+          "question_en": "If experience arrives passively, why can it still yield universal and necessary knowledge?",
+          "bridge_zh": "康德把知识的条件放回主体。到了二十世纪，维特根斯坦提醒我们：许多哲学困惑不是世界太神秘，而是语言在误导我们。",
+          "bridge_en": "Kant relocates the conditions of knowledge into the subject. In the twentieth century, Wittgenstein warns that many philosophical problems come not from a mysterious world but from language misleading us."
+        },
+        {
+          "philosopherId": "wittgenstein",
+          "theoryIndex": 1,
+          "workIndex": 1,
+          "question_zh": "当哲学家争论“意义”时，他们是否先该看看词语在生活里怎样被使用？",
+          "question_en": "When philosophers argue about meaning, should they first look at how words are used in life?",
+          "bridge_zh": "从泰勒斯到维特根斯坦，哲学不断更换提问方式。终点不是标准答案，而是学会辨认一个问题究竟在问什么。",
+          "bridge_en": "From Thales to Wittgenstein, philosophy keeps changing its way of asking. The destination is not one official answer, but the ability to recognize what a question is really asking."
+        }
+      ]
+    },
+    {
+      "id": "philosophy-and-society",
+      "title_zh": "哲学在人类社会发展中起到什么作用？",
+      "title_en": "What does philosophy do in the development of human society?",
+      "description_zh": "从礼与秩序、契约与权利，到极权主义和公共行动，看哲学如何塑造共同生活。",
+      "description_en": "From ritual and order, contract and rights, to totalitarianism and public action: how philosophy shapes life in common.",
+      "steps": [
+        {
+          "philosopherId": "confucius",
+          "theoryIndex": 1,
+          "workIndex": 0,
+          "question_zh": "一个社会如果只靠刑罚维持秩序，为什么仍然可能失去秩序？",
+          "question_en": "If a society relies only on punishment to keep order, why can it still lose that order?",
+          "bridge_zh": "孔子把秩序放在礼、仁和可被学习的习惯中。柏拉图则把问题推向另一端：共同体应当由谁统治？",
+          "bridge_en": "Confucius locates order in ritual, humaneness, and learnable habits. Plato pushes the question to another level: who should rule the community?"
+        },
+        {
+          "philosopherId": "plato",
+          "theoryIndex": 2,
+          "workIndex": 0,
+          "question_zh": "如果统治需要专门知识，那么“多数人的意见”足够吗？",
+          "question_en": "If ruling requires specialized knowledge, is majority opinion enough?",
+          "bridge_zh": "柏拉图让哲学王承担治理知识。奥古斯丁则追问：当尘世本身无法给出终极正义，人的共同体还能把希望放在哪里？",
+          "bridge_en": "Plato gives the philosopher-king the burden of governing knowledge. Augustine asks where hope can be placed when earthly community cannot deliver ultimate justice."
+        },
+        {
+          "philosopherId": "augustine",
+          "theoryIndex": 1,
+          "workIndex": 1,
+          "question_zh": "当政治共同体无法实现真正的正义，人应当如何理解自己的归属？",
+          "question_en": "When a political community cannot realize true justice, how should people understand where they belong?",
+          "bridge_zh": "奥古斯丁把终极秩序寄托于上帝之城。近代政治哲学把目光拉回人间：如果人并非天然向善，秩序如何可能？",
+          "bridge_en": "Augustine places ultimate order in the City of God. Modern political philosophy turns back to this world: if people are not naturally good, how is order possible?"
+        },
+        {
+          "philosopherId": "hobbes",
+          "theoryIndex": 1,
+          "workIndex": 0,
+          "question_zh": "如果每个人都拥有伤害他人的自由，为什么还需要国家？",
+          "question_en": "If everyone is free to harm others, why do we need a state at all?",
+          "bridge_zh": "霍布斯用社会契约换取安全。洛克却坚持：人们交出部分权力，不等于交出不可剥夺的权利。",
+          "bridge_en": "Hobbes trades a social contract for security. Locke insists that surrendering some power does not mean surrendering inalienable rights."
+        },
+        {
+          "philosopherId": "locke",
+          "theoryIndex": 2,
+          "workIndex": 1,
+          "question_zh": "政府的权力从哪里获得正当性，又在什么时候失去它？",
+          "question_en": "Where does government gain legitimacy, and when does it lose it?",
+          "bridge_zh": "洛克把合法性放在被治者的同意上。卢梭进一步追问：如果每个人都在服从，为什么仍然可能不自由？",
+          "bridge_en": "Locke grounds legitimacy in the consent of the governed. Rousseau asks further: if everyone obeys, why can people still fail to be free?"
+        },
+        {
+          "philosopherId": "rousseau",
+          "theoryIndex": 1,
+          "workIndex": 0,
+          "question_zh": "自由的人如何组成共同体，而不是把自由交给一个主人？",
+          "question_en": "How can free people form a community without handing their freedom to a master?",
+          "bridge_zh": "卢梭把自由寄托于公意。马克思提醒我们：只讨论政治形式还不够，人的自由还受物质条件和劳动组织限制。",
+          "bridge_en": "Rousseau places freedom in the general will. Marx reminds us that political forms are not enough: freedom is also constrained by material conditions and the organization of labor."
+        },
+        {
+          "philosopherId": "marx",
+          "theoryIndex": 1,
+          "workIndex": 1,
+          "question_zh": "如果一个人创造了世界，却无法支配自己的劳动，他为什么仍不自由？",
+          "question_en": "If a person creates the world but cannot control their own labor, why are they still unfree?",
+          "bridge_zh": "马克思把社会问题放进历史与生产关系。阿伦特则追问：当个人被压缩成行政对象，恶为什么可能变得如此平常？",
+          "bridge_en": "Marx places social problems within history and relations of production. Arendt asks how evil can become ordinary when people are reduced to administrative objects."
+        },
+        {
+          "philosopherId": "arendt",
+          "theoryIndex": 1,
+          "workIndex": 0,
+          "question_zh": "一个社会如何一步步让普通人停止思考，并把不义当作日常工作？",
+          "question_en": "How does a society gradually make ordinary people stop thinking and treat injustice as daily work?",
+          "bridge_zh": "从礼到极权主义，哲学一直在追问制度如何塑造人。最后一站不是结论，而是提醒：公共世界需要被共同思考、共同维护。",
+          "bridge_en": "From ritual to totalitarianism, philosophy keeps asking how institutions shape people. The last stop is not a conclusion but a reminder: the public world must be thought and maintained in common."
+        }
+      ]
+    },
+    {
+      "id": "philosophy-and-life",
+      "title_zh": "哲学在个人人生中扮演什么角色？",
+      "title_en": "What role does philosophy play in a personal life?",
+      "description_zh": "从逍遥、宁静与自我训练，到价值创造、反抗与自由的关系。",
+      "description_en": "From free wandering, tranquility, and self-training to value creation, revolt, and the relations that make freedom possible.",
+      "steps": [
+        {
+          "philosopherId": "zhuangzi",
+          "theoryIndex": 1,
+          "workIndex": 0,
+          "question_zh": "人能否不被功名、是非和他人目光推着走？",
+          "question_en": "Can a person stop being pushed along by fame, right and wrong, and the eyes of others?",
+          "bridge_zh": "庄子让自我在万物齐一中松开。希腊化哲学继续追问：松开之后，怎样活得更少痛苦？",
+          "bridge_en": "Zhuangzi loosens the self within the equality of all things. Hellenistic philosophy continues: after loosening, how can one live with less suffering?"
+        },
+        {
+          "philosopherId": "epicurus",
+          "theoryIndex": 0,
+          "question_zh": "如果快乐不是纵欲，而是身体无痛、心灵无扰，生活该怎样安排？",
+          "question_en": "If pleasure means freedom from bodily pain and mental disturbance rather than indulgence, how should life be arranged?",
+          "bridge_zh": "伊壁鸠鲁把幸福放在可练习的宁静里。斯多葛学派则给出另一种回答：不是改变世界，而是改变我们判断世界的方式。",
+          "bridge_en": "Epicurus places happiness in a tranquility that can be practiced. Stoicism offers another answer: not changing the world, but changing how we judge it."
+        },
+        {
+          "philosopherId": "zeno_citium",
+          "theoryIndex": 0,
+          "question_zh": "当外部处境不由你决定，什么仍然属于你？",
+          "question_en": "When external circumstances are not up to you, what still belongs to you?",
+          "bridge_zh": "芝诺把自由放在顺应自然的理性中。马可·奥勒留把这条原则带进每日的自我训练。",
+          "bridge_en": "Zeno locates freedom in reason lived in accordance with nature. Marcus Aurelius turns this principle into daily self-training."
+        },
+        {
+          "philosopherId": "marcus_aurelius",
+          "theoryIndex": 0,
+          "workIndex": 0,
+          "question_zh": "如果很多事无法控制，一个人每天还能训练什么？",
+          "question_en": "If so much is beyond control, what can a person still train each day?",
+          "bridge_zh": "奥勒留把注意力收回内在判断。蒙田则把哲学从公共责任带回私人生活：与其急于给出答案，不如先诚实地观察自己。",
+          "bridge_en": "Aurelius draws attention back to inner judgment. Montaigne brings philosophy from public duty into private life: instead of rushing to an answer, first observe oneself honestly."
+        },
+        {
+          "philosopherId": "montaigne",
+          "theoryIndex": 1,
+          "workIndex": 0,
+          "question_zh": "与其急着成为某种人，能不能先看清自己实际上是谁？",
+          "question_en": "Instead of rushing to become a certain kind of person, can one first see who one actually is?",
+          "bridge_zh": "蒙田用怀疑和自省拆穿自我形象。尼采则更进一步：如果旧价值已经松动，人能不能创造新的价值？",
+          "bridge_en": "Montaigne uses doubt and self-examination to puncture the self-image. Nietzsche goes further: if old values have loosened, can a person create new values?"
+        },
+        {
+          "philosopherId": "nietzsche",
+          "theoryIndex": 1,
+          "workIndex": 0,
+          "question_zh": "如果价值不是天上给定的，你愿意为什么承担后果？",
+          "question_en": "If values are not handed down from heaven, what are you willing to create and bear the consequences of?",
+          "bridge_zh": "尼采要求人承担创造价值的重量。加缪面对的是另一种处境：世界未必有统一意义，人还要不要继续追问？",
+          "bridge_en": "Nietzsche asks people to bear the weight of creating value. Camus faces another situation: the world may have no single meaning, so should we keep asking?"
+        },
+        {
+          "philosopherId": "camus",
+          "theoryIndex": 2,
+          "workIndex": 0,
+          "question_zh": "当世界不回答我们对意义的追问，人为什么还要继续生活？",
+          "question_en": "When the world does not answer our demand for meaning, why continue living at all?",
+          "bridge_zh": "加缪把答案放在清醒的反抗里。波伏娃则提醒我们：自由从来不是孤立的，它总与他人的目光、处境和责任纠缠。",
+          "bridge_en": "Camus places the answer in lucid revolt. Beauvoir reminds us that freedom is never isolated; it is entangled with the gaze, situation, and responsibility of others."
+        },
+        {
+          "philosopherId": "beauvoir",
+          "theoryIndex": 2,
+          "workIndex": 0,
+          "question_zh": "当自由总与他人的目光和处境纠缠，怎样活得不把别人变成客体？",
+          "question_en": "When freedom is entangled with the gaze and situation of others, how can one live without turning others into objects?",
+          "bridge_zh": "从庄子的逍遥到波伏娃的他者，这条路线把自由放回关系之中：不是独自摆脱世界，而是在世界中重新选择如何与他人共在。",
+          "bridge_en": "From Zhuangzi's wandering to Beauvoir's otherness, this trail returns freedom to relationship: not escaping the world alone, but choosing anew how to coexist within it."
+        }
+      ]
+    }
+  ]
+}
