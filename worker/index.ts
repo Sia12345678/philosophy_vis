@@ -17,6 +17,7 @@ interface Env {
   };
   TRAIL_MODEL?: string;
   ALLOWED_ORIGINS?: string;
+  PLANNER_DEBUG?: string;
 }
 
 const philosophers = philosophersData.philosophers as PlannerPhilosopher[];
@@ -209,7 +210,12 @@ async function planTrail(
   } catch (error) {
     console.error("[plan-trail] invalid model plan", error, rawPlan.slice(0, 1200));
     return json(
-      { error: "invalid_model_plan", message: "模型返回的路线不完整，请重新提问。" },
+      {
+        error: "invalid_model_plan",
+        message: "模型返回的路线不完整，请重新提问。",
+        detail: error instanceof Error ? error.message : "unknown validation error",
+        ...(env.PLANNER_DEBUG === "1" ? { debug: rawPlan.slice(0, 6000) } : {}),
+      },
       502,
       origin,
       env,

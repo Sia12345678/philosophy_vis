@@ -8,3 +8,6 @@ binding = "ASSETS"
 
 [ai]
 binding = "AI"
+
+[vars]
+PLANNER_DEBUG = "1"
