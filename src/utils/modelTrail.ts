@@ -1,6 +1,7 @@
 import philosophersData from "../data/philosophers.json";
 import type { Trail } from "../data/trails";
 import { getProvider, loadSettings, type ChatSettings } from "../chat/providers";
+import { redactSecrets } from "../chat/redact";
 import {
   buildPlannerSystemPrompt,
   buildTrailFromPlan,
@@ -71,21 +72,6 @@ function classifyStatus(status: number): ModelTrailErrorKind {
   if (status === 429) return "rate";
   if (status >= 500) return "server";
   return "config";
-}
-
-const SECRET_PATTERNS = [
-  /\bsk-[A-Za-z0-9_-]{8,}\b/g,
-  /\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b/g,
-];
-
-function redactSecrets(text: string, apiKey: string): string {
-  let clean = text;
-  const key = apiKey.trim();
-  if (key) clean = clean.split(key).join("[redacted]");
-  for (const pattern of SECRET_PATTERNS) {
-    clean = clean.replace(pattern, "[redacted]");
-  }
-  return clean;
 }
 
 async function responseDetail(response: Response, apiKey: string): Promise<string> {

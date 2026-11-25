@@ -1,4 +1,5 @@
 import type { ProviderConfig } from "./providers";
+import { redactSecrets } from "./redact";
 
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -70,6 +71,7 @@ function classifyHttp(status: number): ChatError["kind"] {
 async function postOrThrow(
   url: string,
   init: RequestInit,
+  apiKey: string,
 ): Promise<Response> {
   let res: Response;
   try {
@@ -84,7 +86,7 @@ async function postOrThrow(
   if (!res.ok) {
     let detail = "";
     try {
-      detail = (await res.text()).slice(0, 400);
+      detail = redactSecrets(await res.text(), apiKey).slice(0, 400);
     } catch {
       /* ignore */
     }
@@ -112,15 +114,19 @@ async function* streamOpenAICompat(
       ...opts.messages,
     ],
   });
-  const res = await postOrThrow(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${opts.apiKey}`,
+  const res = await postOrThrow(
+    url,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${opts.apiKey}`,
+      },
+      body,
+      signal: opts.signal,
     },
-    body,
-    signal: opts.signal,
-  });
+    opts.apiKey,
+  );
 
   for await (const line of readSSELines(res.body!)) {
     if (!line.startsWith("data:")) continue;
@@ -152,17 +158,21 @@ async function* streamAnthropic(
     system: opts.systemPrompt,
     messages: opts.messages,
   });
-  const res = await postOrThrow(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": opts.apiKey,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
+  const res = await postOrThrow(
+    url,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": opts.apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body,
+      signal: opts.signal,
     },
-    body,
-    signal: opts.signal,
-  });
+    opts.apiKey,
+  );
 
   for await (const line of readSSELines(res.body!)) {
     if (!line.startsWith("data:")) continue;

@@ -1017,6 +1017,56 @@ async function runExistingFeatures(browser, baseUrl, origin) {
   await context.close();
 }
 
+async function runChatKeyRedaction(browser, baseUrl, origin) {
+  const { context, page, errors } = await createPage(browser, origin, {
+    width: 1024,
+    height: 768,
+  });
+  const apiKey = "sk-chat-leak-secret-9012";
+  let authorization = "";
+  await page.route("**/test-chat/chat/completions", async (route) => {
+    authorization = route.request().headers().authorization ?? "";
+    await route.fulfill({
+      status: 400,
+      contentType: "application/json",
+      body: JSON.stringify({
+        error: { message: `Incorrect API key provided: ${apiKey}` },
+      }),
+    });
+  });
+  await loadApp(page, baseUrl);
+  await dismissChooser(page);
+  await page.locator("#search").fill("Kant");
+  await page.locator("#search").press("Enter");
+  await page.locator("#sidebar:not(.collapsed)").waitFor({ state: "visible" });
+  await page.locator("#sidebar .chat-settings-toggle").click();
+  const form = page.locator("#sidebar .chat-settings form.provider-settings-form");
+  await form.waitFor({ state: "visible" });
+  await form.locator('select[name="provider"]').selectOption("custom");
+  await form.locator('input[name="apiKey"]').fill(apiKey);
+  await form.locator('input[name="model"]').fill("test-model");
+  await form.locator('input[name="baseUrl"]').fill(`${origin}/test-chat`);
+  await form.locator('[data-settings-action="save"]').click();
+  await page.locator("#sidebar .chat-textarea").fill("测试对话错误脱敏");
+  await page.locator("#sidebar .chat-send-btn").click();
+  const errorEl = page.locator("#sidebar .chat-error:not([hidden])");
+  await errorEl.waitFor({ state: "visible" });
+  const errorText = await errorEl.innerText();
+  check(
+    "chat: provider errors never echo the API key",
+    authorization === `Bearer ${apiKey}` &&
+      !errorText.includes(apiKey) &&
+      errorText.includes("[redacted]"),
+    JSON.stringify({ authorization, errorText }),
+  );
+  check(
+    "chat: redaction test has no unexpected page errors",
+    errors.every((error) => error.includes("400")),
+    errors.join(" | "),
+  );
+  await context.close();
+}
+
 async function runCustomQuestionAndTheme(browser, baseUrl, origin) {
   const { context, page, errors } = await createPage(browser, origin, {
     width: 1440,
@@ -1456,6 +1506,7 @@ try {
   await runResponsiveAndLabels(browser, baseUrl, origin);
   await runReducedMotion(browser, baseUrl, origin);
   await runExistingFeatures(browser, baseUrl, origin);
+  await runChatKeyRedaction(browser, baseUrl, origin);
   await runCustomQuestionAndTheme(browser, baseUrl, origin);
   await runBasemapRetry(browser, baseUrl, origin);
 
