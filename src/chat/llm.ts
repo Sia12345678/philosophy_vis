@@ -76,7 +76,11 @@ async function postOrThrow(
 ): Promise<Response> {
   let res: Response;
   try {
-    res = await fetch(url, init);
+    res = await fetch(url, {
+      ...init,
+      credentials: "omit",
+      referrerPolicy: "no-referrer",
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     throw new ChatError(
